@@ -22,35 +22,10 @@ export default function Home() {
     enabled: isAuthenticated,
   });
 
+  // Redirect to demo if not authenticated
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl">MindSense</CardTitle>
-            <CardDescription>Mental Health Monitoring Platform</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Track your mental health biomarkers and predict relapse risk with AI-powered insights.
-            </p>
-            <div className="space-y-2">
-              <Button asChild className="w-full bg-primary hover:bg-primary/90">
-                <a href="/api/oauth/login">Sign In</a>
-              </Button>
-              <Link href="/demo">
-                <Button variant="outline" className="w-full">
-                  Try Demo
-                </Button>
-              </Link>
-            </div>
-            <p className="text-xs text-muted-foreground text-center">
-              Try the demo to explore all features with sample data
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    window.location.href = '/demo';
+    return null;
   }
 
   const biomarkerData = BIOMARKER_LIST.map((biomarker) => {

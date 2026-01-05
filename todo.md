@@ -319,3 +319,10 @@ Mental health monitoring platform with 5 validated biomarkers (CRP, IL-6, Leptin
 - [ ] Medications page - match Fibrosense meds layout
 - [ ] Insights page - match Fibrosense insights layout
 - [ ] Profile page - match Fibrosense profile layout
+
+
+## Bug Fix - Public Access Without Login ✅
+
+- [x] Redirect unauthenticated users to demo mode automatically
+- [x] Or make main dashboard publicly accessible
+- [x] Test that URL works without authentication

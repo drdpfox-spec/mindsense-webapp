@@ -171,6 +171,14 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         return await db.getInsights(ctx.user.id, input?.includeRead);
       }),
+    
+    generate: protectedProcedure.query(async ({ ctx }) => {
+      const biomarkerReadings = await db.getBiomarkerHistory(ctx.user.id, 30);
+      const moodAssessments = await db.getMoodAssessments(ctx.user.id, 30);
+      
+      const { generateInsights } = await import("./ai-insights");
+      return generateInsights(biomarkerReadings, moodAssessments);
+    }),
   }),
 
   // Relapse Risk

@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { ArrowLeft, Activity } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -18,7 +20,16 @@ type TimeRange = "7" | "30" | "90";
 export default function Trends() {
   const [viewMode, setViewMode] = useState<ViewMode>("single");
   const [selectedBiomarker, setSelectedBiomarker] = useState(BIOMARKER_LIST[0].id);
+  const [selectedBiomarkers, setSelectedBiomarkers] = useState<string[]>([BIOMARKER_LIST[0].id]);
   const [timeRange, setTimeRange] = useState<TimeRange>("30");
+
+  const toggleBiomarker = (biomarkerId: string) => {
+    setSelectedBiomarkers((prev) =>
+      prev.includes(biomarkerId)
+        ? prev.filter((id) => id !== biomarkerId)
+        : [...prev, biomarkerId]
+    );
+  };
 
   const { data: user } = trpc.auth.me.useQuery();
   const isAuthenticated = !!user;
@@ -81,30 +92,70 @@ export default function Trends() {
             </div>
 
             {/* Filters */}
-            <div className="flex gap-2">
-              <Select value={selectedBiomarker} onValueChange={setSelectedBiomarker}>
-                <SelectTrigger className="w-[180px] bg-yellow-50 border-yellow-200">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {BIOMARKER_LIST.map((biomarker) => (
-                    <SelectItem key={biomarker.id} value={biomarker.id}>
-                      {biomarker.id}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="space-y-4">
+              {viewMode === "single" ? (
+                <div className="flex gap-2">
+                  <Select value={selectedBiomarker} onValueChange={setSelectedBiomarker}>
+                    <SelectTrigger className="w-[180px] bg-yellow-50 border-yellow-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BIOMARKER_LIST.map((biomarker) => (
+                        <SelectItem key={biomarker.id} value={biomarker.id}>
+                          {biomarker.id}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-              <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
-                <SelectTrigger className="w-[180px] bg-yellow-50 border-yellow-200">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7">Last 7 days</SelectItem>
-                  <SelectItem value="30">Last 30 days</SelectItem>
-                  <SelectItem value="90">Last 90 days</SelectItem>
-                </SelectContent>
-              </Select>
+                  <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
+                    <SelectTrigger className="w-[180px] bg-yellow-50 border-yellow-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="7">Last 7 days</SelectItem>
+                      <SelectItem value="30">Last 30 days</SelectItem>
+                      <SelectItem value="90">Last 90 days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
+                      <SelectTrigger className="w-[180px] bg-yellow-50 border-yellow-200">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="7">Last 7 days</SelectItem>
+                        <SelectItem value="30">Last 30 days</SelectItem>
+                        <SelectItem value="90">Last 90 days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium mb-2">Select Biomarkers to Compare:</p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {BIOMARKER_LIST.map((biomarker) => (
+                        <div key={biomarker.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={biomarker.id}
+                            checked={selectedBiomarkers.includes(biomarker.id)}
+                            onCheckedChange={() => toggleBiomarker(biomarker.id)}
+                          />
+                          <Label
+                            htmlFor={biomarker.id}
+                            className="text-sm font-normal cursor-pointer"
+                            style={{ color: biomarker.color }}
+                          >
+                            {biomarker.id}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -124,7 +175,7 @@ export default function Trends() {
             ) : (
               <BiomarkerChart
                 readings={biomarkerReadings}
-                selectedBiomarker={selectedBiomarker}
+                selectedBiomarkers={viewMode === "single" ? [selectedBiomarker] : selectedBiomarkers}
                 timeRange={timeRange}
               />
             )}
@@ -139,11 +190,11 @@ export default function Trends() {
 // BiomarkerChart Component
 function BiomarkerChart({
   readings,
-  selectedBiomarker,
+  selectedBiomarkers,
   timeRange,
 }: {
   readings: any[];
-  selectedBiomarker: string;
+  selectedBiomarkers: string[];
   timeRange: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -152,22 +203,40 @@ function BiomarkerChart({
   useEffect(() => {
     if (!canvasRef.current || !readings) return;
 
-    // Filter readings for selected biomarker
-    const filteredReadings = readings
-      .filter((r) => r.biomarkerType === selectedBiomarker)
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    // Get all unique timestamps
+    const allTimestamps = [...new Set(readings.map((r) => r.timestamp))]
+      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
-    if (filteredReadings.length === 0) return;
+    if (allTimestamps.length === 0) return;
 
-    // Prepare data
-    const labels = filteredReadings.map((r) =>
-      new Date(r.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    // Prepare labels
+    const labels = allTimestamps.map((timestamp) =>
+      new Date(timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric" })
     );
-    const data = filteredReadings.map((r) => r.value);
 
-    // Get biomarker info for color
-    const biomarkerInfo = BIOMARKER_LIST.find((b) => b.id === selectedBiomarker);
-    const color = biomarkerInfo?.color || "#00A651";
+    // Create datasets for each selected biomarker
+    const datasets = selectedBiomarkers.map((biomarkerId) => {
+      const biomarkerInfo = BIOMARKER_LIST.find((b) => b.id === biomarkerId);
+      const color = biomarkerInfo?.color || "#00A651";
+
+      const biomarkerReadings = readings.filter((r) => r.biomarkerType === biomarkerId);
+      const data = allTimestamps.map((timestamp) => {
+        const reading = biomarkerReadings.find((r) => r.timestamp === timestamp);
+        return reading ? reading.value : null;
+      });
+
+      return {
+        label: biomarkerId,
+        data,
+        borderColor: color,
+        backgroundColor: color + "20",
+        borderWidth: 2,
+        pointRadius: 4,
+        pointBackgroundColor: color,
+        tension: 0.3,
+        spanGaps: true,
+      };
+    });
 
     // Destroy existing chart
     if (chartRef.current) {
@@ -179,18 +248,7 @@ function BiomarkerChart({
       type: "line",
       data: {
         labels,
-        datasets: [
-          {
-            label: selectedBiomarker,
-            data,
-            borderColor: color,
-            backgroundColor: color + "20",
-            borderWidth: 2,
-            pointRadius: 4,
-            pointBackgroundColor: color,
-            tension: 0.3,
-          },
-        ],
+        datasets,
       },
       options: {
         responsive: true,
@@ -217,7 +275,7 @@ function BiomarkerChart({
             display: true,
             title: {
               display: true,
-              text: biomarkerInfo?.unit || "Value",
+              text: "Value",
             },
           },
         },
@@ -231,7 +289,7 @@ function BiomarkerChart({
         chartRef.current.destroy();
       }
     };
-  }, [readings, selectedBiomarker, timeRange]);
+  }, [readings, selectedBiomarkers, timeRange]);
 
   return (
     <div className="w-full h-[400px]">

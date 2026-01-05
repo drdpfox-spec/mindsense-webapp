@@ -3,8 +3,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Activity, Calendar, Users, Wifi, WifiOff, Battery, TrendingUp, TrendingDown, Minus, AlertCircle, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 import { BIOMARKER_LIST } from "@shared/biomarkers";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 export default function Demo() {
+  const generateSampleDataMutation = trpc.demo.generateSampleData.useMutation({
+    onSuccess: () => {
+      toast.success("Sample data generated successfully! Sign in to view your data.");
+    },
+    onError: (error) => {
+      toast.error(`Failed to generate sample data: ${error.message}`);
+    },
+  });
+
+  const handleGenerateSampleData = () => {
+    generateSampleDataMutation.mutate();
+  };
+
   // Mock demo data
   const DEMO_BIOMARKERS = [
     { biomarkerType: "CRP", value: 3.2 },
@@ -61,9 +76,13 @@ export default function Demo() {
                   You're viewing demo data. <a href="/api/oauth/login" className="text-primary underline">Sign in</a> to save your own health data.
                 </p>
               </div>
-              <Button className="bg-primary hover:bg-primary/90 text-white">
+              <Button 
+                className="bg-primary hover:bg-primary/90 text-white"
+                onClick={handleGenerateSampleData}
+                disabled={generateSampleDataMutation.isLoading}
+              >
                 <Activity className="h-4 w-4 mr-2" />
-                Generate Sample Data
+                {generateSampleDataMutation.isLoading ? "Generating..." : "Generate Sample Data"}
               </Button>
             </div>
           </CardContent>

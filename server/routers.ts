@@ -172,6 +172,34 @@ export const appRouter = router({
         return await db.getInsights(ctx.user.id, input?.includeRead);
       }),
     
+    correlations: protectedProcedure.query(async ({ ctx }) => {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 90); // Last 90 days
+      
+      const dbReadings = await db.getBiomarkerReadings(ctx.user.id, startDate, endDate);
+      const dbMoodAssessments = await db.getMoodAssessments(ctx.user.id, 90);
+      
+      // Map to correlation analysis format
+      const biomarkerData = dbReadings.map(r => ({
+        biomarkerType: r.biomarkerType,
+        value: r.value,
+        date: r.measuredAt
+      }));
+      
+      const moodData = dbMoodAssessments.map(m => ({
+        moodScore: m.moodScore || 0,
+        anxietyScore: m.anxietyScore || undefined,
+        stressScore: m.stressScore || undefined,
+        date: m.assessmentDate
+      }));
+      
+      const { generateCorrelationMatrix } = await import("./correlation-analysis");
+      const matrix = generateCorrelationMatrix(biomarkerData, moodData, { start: startDate, end: endDate });
+      
+      return matrix;
+    }),
+    
     generate: protectedProcedure.query(async ({ ctx }) => {
       const endDate = new Date();
       const startDate = new Date();

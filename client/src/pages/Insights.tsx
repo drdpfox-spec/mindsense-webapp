@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 import { AlertTriangle, CheckCircle2, Info, TrendingUp, Brain, Activity } from "lucide-react";
+import CorrelationHeatmap from "@/components/CorrelationHeatmap";
 
 export default function Insights() {
   const { isAuthenticated } = useAuth();
@@ -129,6 +130,9 @@ export default function Insights() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Correlation Heatmap */}
+            <CorrelationHeatmap />
 
             {/* Insights List */}
             <div className="space-y-4">

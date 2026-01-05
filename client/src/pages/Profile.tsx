@@ -8,6 +8,7 @@ import { User, FileText, Download, Upload, Settings, LogOut } from "lucide-react
 import { toast } from "sonner";
 import { jsPDF } from "jspdf";
 import { getLoginUrl } from "@/const";
+import NotificationSettings from "@/components/NotificationSettings";
 
 export default function Profile() {
   const { user, logout } = useAuth();
@@ -267,23 +268,8 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Settings Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Settings</CardTitle>
-            <CardDescription>Application preferences</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full justify-start">
-              <Settings className="h-4 w-4 mr-2" />
-              Notification Preferences
-            </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <Settings className="h-4 w-4 mr-2" />
-              Privacy Settings
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Notification Settings Card */}
+        <NotificationSettings />
       </div>
     </div>
   );

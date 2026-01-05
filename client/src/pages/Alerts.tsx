@@ -1,0 +1,1 @@
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'; export default function Alerts() { return <div className='container mx-auto p-8'><Card><CardHeader><CardTitle>Alerts</CardTitle></CardHeader><CardContent><p>Coming soon...</p></CardContent></Card></div>; }

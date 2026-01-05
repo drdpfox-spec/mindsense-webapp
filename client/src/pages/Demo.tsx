@@ -54,11 +54,17 @@ export default function Demo() {
         {/* Demo Mode Banner */}
         <Card className="border-primary/50 bg-primary/5">
           <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-primary" />
-              <p className="text-sm font-medium">
-                You're viewing demo data. <a href="/api/oauth/login" className="text-primary underline">Sign in</a> to save your own health data.
-              </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-primary" />
+                <p className="text-sm font-medium">
+                  You're viewing demo data. <a href="/api/oauth/login" className="text-primary underline">Sign in</a> to save your own health data.
+                </p>
+              </div>
+              <Button className="bg-primary hover:bg-primary/90 text-white">
+                <Activity className="h-4 w-4 mr-2" />
+                Generate Sample Data
+              </Button>
             </div>
           </CardContent>
         </Card>

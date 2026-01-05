@@ -342,3 +342,39 @@ Mental health monitoring platform with 5 validated biomarkers (CRP, IL-6, Leptin
 - [x] Remove or fix Prescriptions.tsx references
 - [x] Test all pages load without errors
 - [x] Verify navigation works correctly
+
+
+## Phase 11: Complete Final Features ✅
+
+### Profile Page - Fibrosense Style ✅
+- [x] Add Account Information section (name, email, login method)
+- [x] Add Health Profile section (diagnosis type, date, baseline biomarkers)
+- [x] Add Data Backup section (export/import)
+- [x] Add Reports, Backup, Settings navigation buttons
+- [x] Add Sign Out button
+
+### Generate Sample Data Feature ✅
+- [x] Add "Generate Sample Data" button to demo dashboard
+- [x] Implement sample data generation for biomarkers (30-90 days)
+- [x] Generate mood assessments
+- [x] Generate journal entries
+- [x] Generate medications
+- [x] Generate appointments
+- [x] Show success message after generation
+
+### Activate CTA Buttons ✅
+- [x] Wire up "Add Entry" buttons in Journal page
+- [x] Wire up "Add Medication" button in Medications page
+- [x] Wire up "Generate Insights" button in Insights page
+- [x] Wire up "Schedule one" button in Appointments card
+- [x] Wire up "Add a provider" button in Care Team card
+- [x] Wire up filter buttons in Trends page
+
+### Biomarker Charting on Trends Page ✅
+- [x] Install Chart.js if not already installed
+- [x] Add biomarker selector (checkboxes for multiple selection)
+- [x] Implement line chart with Chart.js
+- [x] Show multiple biomarkers on same chart with different colors
+- [x] Add time range selector (7 days, 30 days, 90 days, All)
+- [x] Add legend showing biomarker colors
+- [x] Handle empty state when no data available

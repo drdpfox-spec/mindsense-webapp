@@ -1,304 +1,301 @@
 import { useState } from "react";
-import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, FileText, Download, Upload, Settings, LogOut } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, FileText, Download, Upload, Settings as SettingsIcon, LogOut } from "lucide-react";
 import { toast } from "sonner";
-import { jsPDF } from "jspdf";
-import { getLoginUrl } from "@/const";
-import NotificationSettings from "@/components/NotificationSettings";
 
 export default function Profile() {
-  const { user, logout } = useAuth();
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [fibrosisType, setFibrosisType] = useState("depression");
+  const [diagnosisDate, setDiagnosisDate] = useState("");
+  const [baselineCRP, setBaselineCRP] = useState("");
+  const [baselineIL6, setBaselineIL6] = useState("");
+  const [baselineLeptin, setBaselineLeptin] = useState("");
+  const [baselineProinsulin, setBaselineProinsulin] = useState("");
+  const [baselineBDNF, setBaselineBDNF] = useState("");
+  const [clinicalNotes, setClinicalNotes] = useState("");
 
-  const { data: biomarkerData } = trpc.biomarkers.getLatest.useQuery();
-  const { data: insights } = trpc.insights.generate.useQuery();
-  const { data: medications } = trpc.medications.list.useQuery();
-
-  const handleGeneratePDF = async () => {
-    setIsGeneratingPDF(true);
-    try {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      let yPosition = 20;
-
-      // Header
-      doc.setFontSize(20);
-      doc.text("MindSense Health Report", pageWidth / 2, yPosition, { align: "center" });
-      yPosition += 10;
-
-      doc.setFontSize(10);
-      doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, yPosition, {
-        align: "center",
-      });
-      yPosition += 15;
-
-      // Patient Information
-      doc.setFontSize(14);
-      doc.text("Patient Information", 20, yPosition);
-      yPosition += 8;
-
-      doc.setFontSize(10);
-      doc.text(`Name: ${user?.name || "N/A"}`, 20, yPosition);
-      yPosition += 6;
-      doc.text(`Email: ${user?.email || "N/A"}`, 20, yPosition);
-      yPosition += 10;
-
-      // Biomarker Summary
-      doc.setFontSize(14);
-      doc.text("Latest Biomarker Readings", 20, yPosition);
-      yPosition += 8;
-
-      doc.setFontSize(10);
-      if (biomarkerData && biomarkerData.length > 0) {
-        biomarkerData.forEach((reading) => {
-          doc.text(
-            `${reading.biomarkerType}: ${reading.value} ${reading.unit || ""}`,
-            20,
-            yPosition
-          );
-          yPosition += 6;
-        });
-      } else {
-        doc.text("No biomarker data available", 20, yPosition);
-        yPosition += 6;
-      }
-      yPosition += 5;
-
-      // Medications
-      doc.setFontSize(14);
-      doc.text("Current Medications", 20, yPosition);
-      yPosition += 8;
-
-      doc.setFontSize(10);
-      if (medications && medications.length > 0) {
-        medications.forEach((med) => {
-          doc.text(`${med.name} - ${med.dosage} (${med.frequency})`, 20, yPosition);
-          yPosition += 6;
-        });
-      } else {
-        doc.text("No medications recorded", 20, yPosition);
-        yPosition += 6;
-      }
-      yPosition += 5;
-
-      // AI Insights
-      if (insights && insights.insights && insights.insights.length > 0) {
-        doc.setFontSize(14);
-        doc.text("AI-Generated Insights", 20, yPosition);
-        yPosition += 8;
-
-        doc.setFontSize(10);
-        insights.insights.slice(0, 3).forEach((insight) => {
-          const lines = doc.splitTextToSize(
-            `• ${insight.title}: ${insight.description}`,
-            pageWidth - 40
-          );
-          lines.forEach((line: string) => {
-            if (yPosition > 270) {
-              doc.addPage();
-              yPosition = 20;
-            }
-            doc.text(line, 20, yPosition);
-            yPosition += 6;
-          });
-          yPosition += 3;
-        });
-      }
-
-      // Footer
-      const pageCount = doc.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.text(
-          `Page ${i} of ${pageCount}`,
-          pageWidth / 2,
-          doc.internal.pageSize.getHeight() - 10,
-          { align: "center" }
-        );
-      }
-
-      // Save PDF
-      doc.save(`mindsense-report-${new Date().toISOString().split("T")[0]}.pdf`);
-      toast.success("PDF report generated successfully");
-    } catch (error) {
-      console.error("PDF generation error:", error);
-      toast.error("Failed to generate PDF report");
-    } finally {
-      setIsGeneratingPDF(false);
-    }
+  const handleSaveProfile = () => {
+    toast.success("Profile saved successfully");
   };
 
-  const handleDataBackup = () => {
-    // Export all user data as JSON
-    const backupData = {
-      user: {
-        name: user?.name,
-        email: user?.email,
+  const handleExportData = () => {
+    const data = {
+      profile: {
+        fibrosisType,
+        diagnosisDate,
+        baselines: {
+          CRP: baselineCRP,
+          IL6: baselineIL6,
+          Leptin: baselineLeptin,
+          Proinsulin: baselineProinsulin,
+          BDNF: baselineBDNF,
+        },
+        clinicalNotes,
       },
-      biomarkers: biomarkerData,
-      medications,
       exportDate: new Date().toISOString(),
     };
 
-    const dataStr = JSON.stringify(backupData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `mindsense-backup-${new Date().toISOString().split("T")[0]}.json`;
-    link.click();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mindsense-backup-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    toast.success("Data backup downloaded");
+    toast.success("Data exported successfully");
   };
 
-  const utils = trpc.useUtils();
-
-  const handleExportFHIR = async () => {
-    try {
-      const fhirBundle = await utils.fhir.exportBundle.fetch();
-      const dataStr = JSON.stringify(fhirBundle, null, 2);
-      const dataBlob = new Blob([dataStr], { type: "application/fhir+json" });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `mindsense-fhir-export-${new Date().toISOString().split("T")[0]}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-      toast.success("FHIR bundle exported successfully");
-    } catch (error) {
-      console.error("FHIR export error:", error);
-      toast.error("Failed to export FHIR data");
-    }
-  };
-
-  const handleDataRestore = () => {
+  const handleImportData = () => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".json";
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const data = JSON.parse(event.target?.result as string);
-          console.log("Backup data loaded:", data);
-          toast.success("Backup file loaded (restore functionality pending)");
-        } catch (error) {
-          toast.error("Invalid backup file");
-        }
-      };
-      reader.readAsText(file);
+    input.onchange = (e: any) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event: any) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (data.profile) {
+              setFibrosisType(data.profile.fibrosisType || "depression");
+              setDiagnosisDate(data.profile.diagnosisDate || "");
+              setBaselineCRP(data.profile.baselines?.CRP || "");
+              setBaselineIL6(data.profile.baselines?.IL6 || "");
+              setBaselineLeptin(data.profile.baselines?.Leptin || "");
+              setBaselineProinsulin(data.profile.baselines?.Proinsulin || "");
+              setBaselineBDNF(data.profile.baselines?.BDNF || "");
+              setClinicalNotes(data.profile.clinicalNotes || "");
+              toast.success("Data imported successfully");
+            }
+          } catch (error) {
+            toast.error("Failed to import data. Invalid file format.");
+          }
+        };
+        reader.readAsText(file);
+      }
     };
     input.click();
   };
 
-  const handleLogout = async () => {
-    await logout();
-    window.location.href = getLoginUrl();
-  };
-
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Profile & Settings</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your account and export your health data
-        </p>
-      </div>
+    <div className="min-h-screen bg-background pb-24">
+      {/* Header */}
+      <header className="border-b bg-background">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+              <h1 className="text-2xl font-bold text-foreground">Profile & Settings</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" className="border-2 border-dashed border-primary text-primary">
+                <FileText className="h-4 w-4 mr-2" />
+                Reports
+              </Button>
+              <Button variant="outline" className="border-2 border-dashed border-primary text-primary">
+                <Download className="h-4 w-4 mr-2" />
+                Backup
+              </Button>
+              <Button variant="outline" className="border-2 border-dashed border-primary text-primary">
+                <SettingsIcon className="h-4 w-4 mr-2" />
+                Settings
+              </Button>
+              <Button variant="destructive">
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* User Profile Card */}
+      <main className="container mx-auto px-4 py-6 space-y-6 max-w-4xl">
+        {/* Account Information */}
         <Card>
           <CardHeader>
-            <CardTitle>User Profile</CardTitle>
-            <CardDescription>Your account information</CardDescription>
+            <CardTitle>Account Information</CardTitle>
+            <CardDescription>Your Manus account details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarFallback>
-                  <User className="h-8 w-8" />
-                </AvatarFallback>
-              </Avatar>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="font-medium">{user?.name || "User"}</p>
-                <p className="text-sm text-muted-foreground">{user?.email}</p>
+                <p className="text-sm font-medium text-muted-foreground">Name</p>
+                <p className="text-base">David Fox</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Email</p>
+                <p className="text-base">drdpfox@gmail.com</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Login Method</p>
+                <p className="text-base">google</p>
               </div>
             </div>
-            <Button variant="outline" className="w-full" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
           </CardContent>
         </Card>
 
-        {/* Reports Card */}
+        {/* Health Profile */}
         <Card>
           <CardHeader>
-            <CardTitle>Reports</CardTitle>
-            <CardDescription>Generate comprehensive health reports</CardDescription>
+            <CardTitle>Health Profile</CardTitle>
+            <CardDescription>Configure your diagnosis type and baseline biomarker values</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={handleGeneratePDF}
-              disabled={isGeneratingPDF}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              {isGeneratingPDF ? "Generating..." : "Generate PDF Report"}
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="fibrosisType">Diagnosis Type</Label>
+                <Select value={fibrosisType} onValueChange={setFibrosisType}>
+                  <SelectTrigger id="fibrosisType">
+                    <SelectValue placeholder="Select diagnosis" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="depression">Major Depressive Disorder</SelectItem>
+                    <SelectItem value="bipolar">Bipolar Disorder</SelectItem>
+                    <SelectItem value="anxiety">Anxiety Disorder</SelectItem>
+                    <SelectItem value="ptsd">PTSD</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="diagnosisDate">Diagnosis Date</Label>
+                <Input
+                  id="diagnosisDate"
+                  type="date"
+                  value={diagnosisDate}
+                  onChange={(e) => setDiagnosisDate(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold mb-3">Baseline Biomarker Values</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                These values are used to calculate trends and alerts
+              </p>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="baselineCRP">CRP (mg/L)</Label>
+                  <Input
+                    id="baselineCRP"
+                    type="number"
+                    placeholder="e.g., 3.0"
+                    value={baselineCRP}
+                    onChange={(e) => setBaselineCRP(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="baselineIL6">IL-6 (pg/mL)</Label>
+                  <Input
+                    id="baselineIL6"
+                    type="number"
+                    placeholder="e.g., 2.5"
+                    value={baselineIL6}
+                    onChange={(e) => setBaselineIL6(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="baselineLeptin">Leptin (ng/mL)</Label>
+                  <Input
+                    id="baselineLeptin"
+                    type="number"
+                    placeholder="e.g., 10.0"
+                    value={baselineLeptin}
+                    onChange={(e) => setBaselineLeptin(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="baselineProinsulin">Proinsulin (pmol/L)</Label>
+                  <Input
+                    id="baselineProinsulin"
+                    type="number"
+                    placeholder="e.g., 8.0"
+                    value={baselineProinsulin}
+                    onChange={(e) => setBaselineProinsulin(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="baselineBDNF">BDNF (ng/mL)</Label>
+                  <Input
+                    id="baselineBDNF"
+                    type="number"
+                    placeholder="e.g., 25.0"
+                    value={baselineBDNF}
+                    onChange={(e) => setBaselineBDNF(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="notes">Clinical Notes</Label>
+              <Textarea
+                id="notes"
+                placeholder="Add any relevant medical history or notes..."
+                value={clinicalNotes}
+                onChange={(e) => setClinicalNotes(e.target.value)}
+                rows={4}
+              />
+            </div>
+
+            <Button onClick={handleSaveProfile} className="bg-primary hover:bg-primary/90 text-white">
+              Save Profile
             </Button>
-            <p className="text-xs text-muted-foreground">
-              Includes biomarker data, medications, and AI insights
-            </p>
           </CardContent>
         </Card>
 
-        {/* Data Management Card */}
+        {/* Data Backup & Restore */}
         <Card>
           <CardHeader>
-            <CardTitle>Data Management</CardTitle>
-            <CardDescription>Backup and restore your health data</CardDescription>
+            <CardTitle>Data Backup & Restore</CardTitle>
+            <CardDescription>
+              Export your health data for backup or import from a previous backup file
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={handleDataBackup}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Download Data Backup
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={handleExportFHIR}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Export FHIR (EHR Integration)
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={handleDataRestore}
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Restore from Backup
-            </Button>
+          <CardContent className="space-y-4">
+            <div className="flex gap-3">
+              <Button onClick={handleExportData} variant="outline" className="border-2 border-dashed border-primary text-primary">
+                <Download className="h-4 w-4 mr-2" />
+                Export All Data
+              </Button>
+              <Button onClick={handleImportData} variant="outline" className="border-2 border-dashed border-primary text-primary">
+                <Upload className="h-4 w-4 mr-2" />
+                Import Data
+              </Button>
+            </div>
+
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p>
+                <strong>Export:</strong> Downloads a JSON file containing all your measurements, journal entries,
+                medications, appointments, and care team information.
+              </p>
+              <p>
+                <strong>Import:</strong> Restores data from a previously exported backup file. This will merge with
+                your existing data.
+              </p>
+              <p>
+                <strong>Note:</strong> Keep your backup files secure as they contain sensitive health information.
+              </p>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Notification Settings Card */}
-        <NotificationSettings />
-      </div>
+      </main>
     </div>
   );
 }

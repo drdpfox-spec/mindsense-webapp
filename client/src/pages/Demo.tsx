@@ -1,98 +1,19 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Activity, TrendingUp, TrendingDown, Minus, AlertCircle, Loader2 } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Activity, Calendar, Users, Wifi, WifiOff, Battery, TrendingUp, TrendingDown, Minus, AlertCircle, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 import { BIOMARKER_LIST } from "@shared/biomarkers";
-import { toast } from "sonner";
-
-// Mock demo data
-const DEMO_BIOMARKERS = [
-  { biomarkerType: "CRP", value: 3.2, unit: "mg/L" },
-  { biomarkerType: "IL6", value: 2.8, unit: "pg/mL" },
-  { biomarkerType: "LEPTIN", value: 28.5, unit: "ng/mL" },
-  { biomarkerType: "PROINSULIN", value: 12.1, unit: "pmol/L" },
-  { biomarkerType: "BDNF", value: 24.3, unit: "ng/mL" },
-];
-
-const DEMO_ALERTS = [
-  { id: 1, message: "CRP levels elevated - consider lifestyle adjustments", severity: "warning" },
-  { id: 2, message: "Mood trend shows improvement over last 7 days", severity: "info" },
-];
 
 export default function Demo() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [demoActive, setDemoActive] = useState(false);
+  // Mock demo data
+  const DEMO_BIOMARKERS = [
+    { biomarkerType: "CRP", value: 3.2 },
+    { biomarkerType: "IL6", value: 2.8 },
+    { biomarkerType: "LEPTIN", value: 28.5 },
+    { biomarkerType: "PROINSULIN", value: 12.1 },
+    { biomarkerType: "BDNF", value: 24.3 },
+  ];
 
-  const handleStartDemo = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setDemoActive(true);
-      toast.success("Demo mode activated! Explore all features with sample data.");
-    }, 1500);
-  };
-
-  if (!demoActive) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>MindSense Demo</CardTitle>
-            <CardDescription>Explore all features with sample data</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3 text-sm">
-              <div className="flex items-start gap-3">
-                <Activity className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">5 Mental Health Biomarkers</p>
-                  <p className="text-muted-foreground">CRP, IL-6, Leptin, Proinsulin, BDNF</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <TrendingUp className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">Trend Analysis</p>
-                  <p className="text-muted-foreground">30 days of historical data</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">AI Insights</p>
-                  <p className="text-muted-foreground">Pattern detection and risk assessment</p>
-                </div>
-              </div>
-            </div>
-
-            <Button
-              onClick={handleStartDemo}
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Loading Demo...
-                </>
-              ) : (
-                "Start Demo"
-              )}
-            </Button>
-
-            <Link href="/">
-              <Button variant="outline" className="w-full">
-                Back to Home
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Demo dashboard
   const biomarkerData = BIOMARKER_LIST.map((biomarker) => {
     const reading = DEMO_BIOMARKERS.find((r) => r.biomarkerType === biomarker.id);
     const value = reading ? reading.value : null;
@@ -107,147 +28,198 @@ export default function Demo() {
     };
   });
 
-  const getTrendIcon = (trend: string) => {
-    if (trend === "up") return <TrendingUp className="h-4 w-4 text-red-500" />;
-    if (trend === "down") return <TrendingDown className="h-4 w-4 text-green-500" />;
-    return <Minus className="h-4 w-4 text-gray-500" />;
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <Activity className="h-6 w-6 text-primary-foreground" />
+    <div className="min-h-screen bg-background pb-24">
+      {/* Header - Fibrosense Style */}
+      <header className="border-b bg-background sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
+              <Activity className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold">MindSense</h1>
-              <p className="text-sm text-muted-foreground">Demo Mode - Sample Data</p>
+              <h1 className="text-lg font-semibold text-foreground">MindSense</h1>
+              <p className="text-xs text-muted-foreground">Demo Mode - Sample Data</p>
             </div>
           </div>
-          <Link href="/">
-            <Button variant="outline">Back</Button>
-          </Link>
+          <a href="/api/oauth/login">
+            <Button variant="ghost" size="sm" className="text-primary">
+              Sign In
+            </Button>
+          </a>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 space-y-8">
-        {/* Current Status */}
-        <Card>
-          <CardHeader className="border-b">
-            <div className="flex items-center justify-between">
-              <CardTitle>Current Status</CardTitle>
-              <div className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-sm font-semibold">
-                Stable
-              </div>
+      <main className="container mx-auto px-4 py-6 space-y-6">
+        {/* Demo Mode Banner */}
+        <Card className="border-primary/50 bg-primary/5">
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-primary" />
+              <p className="text-sm font-medium">
+                You're viewing demo data. <a href="/api/oauth/login" className="text-primary underline">Sign in</a> to save your own health data.
+              </p>
             </div>
-            <CardDescription>Demo data - Last updated {new Date().toLocaleString()}</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6 space-y-4">
-            {DEMO_ALERTS.map((alert) => (
-              <div
-                key={alert.id}
-                className={`flex items-center gap-2 p-3 rounded-lg ${
-                  alert.severity === "warning"
-                    ? "bg-yellow-50 dark:bg-yellow-900/20"
-                    : "bg-blue-50 dark:bg-blue-900/20"
-                }`}
-              >
-                <AlertCircle
-                  className={`h-5 w-5 ${
-                    alert.severity === "warning" ? "text-yellow-600" : "text-blue-600"
-                  }`}
-                />
-                <p className="text-sm font-medium">{alert.message}</p>
-              </div>
-            ))}
           </CardContent>
         </Card>
 
-        {/* Biomarkers */}
-        <Card>
-          <CardHeader className="border-b">
+        {/* Two Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Upcoming Appointments Card */}
+          <Card className="border-dashed border-2 border-primary/20">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-base">Upcoming Appointments</CardTitle>
+                </div>
+                <span className="text-xs text-muted-foreground">Next 7 days</span>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Calendar className="h-12 w-12 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No upcoming appointments</p>
+                <Link href="/appointments">
+                  <Button variant="link" className="text-primary text-xs mt-2 h-auto p-0">
+                    Schedule one <ArrowRight className="h-3 w-3 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Care Team Card */}
+          <Card className="border-dashed border-2 border-primary/20">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-base">Care Team</CardTitle>
+                </div>
+              </div>
+              <CardDescription className="text-xs">Your healthcare providers</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No care team members yet</p>
+                <Link href="/care-team">
+                  <Button variant="link" className="text-primary text-xs mt-2 h-auto p-0">
+                    Add a provider <ArrowRight className="h-3 w-3 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Current Status Card */}
+        <Card className="border-dashed border-2 border-primary/20">
+          <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle>Biomarkers</CardTitle>
-              <Link href="/trends">
-                <Button variant="link">View Trends →</Button>
-              </Link>
+              <CardTitle className="text-base">Current Status</CardTitle>
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Stable</span>
             </div>
           </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {biomarkerData.map((biomarker) => (
-                <div
-                  key={biomarker.id}
-                  className="p-4 border rounded-lg space-y-3"
-                  style={{ borderTopWidth: 4, borderTopColor: biomarker.color }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: biomarker.color }}
-                      />
-                      <span className="font-medium text-sm">{biomarker.id}</span>
-                    </div>
-                    {getTrendIcon(biomarker.trend)}
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">
-                      {biomarker.value?.toFixed(1) || "N/A"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{biomarker.unit}</p>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Range: {biomarker.normalRange.min}-{biomarker.normalRange.max}</span>
-                    <span className={biomarker.change > 0 ? "text-red-600" : "text-green-600"}>
-                      {biomarker.change > 0 ? "+" : ""}{biomarker.change.toFixed(1)}%
-                    </span>
-                  </div>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <WifiOff className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium text-foreground">No Device Connected</p>
+                  <p className="text-xs text-muted-foreground">Disconnected</p>
                 </div>
-              ))}
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium text-foreground">0%</p>
+                <Battery className="h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
           </CardContent>
         </Card>
+
+        {/* Biomarkers Section */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-foreground">Biomarkers</h2>
+            <Link href="/trends">
+              <Button variant="link" className="text-primary text-sm h-auto p-0">
+                View Trends <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {biomarkerData.map((biomarker) => (
+              <Card key={biomarker.id} className="border-dashed border border-primary/20">
+                <CardContent className="pt-4">
+                  <p className="text-sm font-semibold text-primary mb-2">{biomarker.id}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {biomarker.value ? `${biomarker.value.toFixed(1)} ${biomarker.unit}` : "—"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {biomarker.normalRange.min}-{biomarker.normalRange.max} {biomarker.unit}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
 
         {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Explore more features</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Link href="/trends">
-                <Button variant="outline" className="w-full justify-start">
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  View Trends
-                </Button>
-              </Link>
-              <Link href="/insights">
-                <Button variant="outline" className="w-full justify-start">
-                  <Activity className="h-4 w-4 mr-2" />
-                  AI Insights
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Sign In Prompt */}
-        <Card className="border-primary/50 bg-primary/5">
-          <CardHeader>
-            <CardTitle className="text-lg">Ready to Get Started?</CardTitle>
-            <CardDescription>Sign in to save your own health data and get personalized insights</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/">
-              <Button className="w-full">Sign In to MindSense</Button>
+        <div>
+          <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-3 md:grid-cols-8 gap-2">
+            <Link href="/journal">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col gap-1 py-3 border-dashed border-primary/20 text-primary hover:bg-primary/5">
+                <AlertCircle className="h-4 w-4" />
+                <span className="text-xs">Log Mood</span>
+              </Button>
             </Link>
-          </CardContent>
-        </Card>
+            <Link href="/trends">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col gap-1 py-3 border-dashed border-primary/20 text-primary hover:bg-primary/5">
+                <TrendingUp className="h-4 w-4" />
+                <span className="text-xs">Trends</span>
+              </Button>
+            </Link>
+            <Link href="/insights">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col gap-1 py-3 border-dashed border-primary/20 text-primary hover:bg-primary/5">
+                <Activity className="h-4 w-4" />
+                <span className="text-xs">Insights</span>
+              </Button>
+            </Link>
+            <Link href="/medications">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col gap-1 py-3 border-dashed border-primary/20 text-primary hover:bg-primary/5">
+                <Activity className="h-4 w-4" />
+                <span className="text-xs">Meds</span>
+              </Button>
+            </Link>
+            <Link href="/alerts">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col gap-1 py-3 border-dashed border-primary/20 text-primary hover:bg-primary/5">
+                <AlertCircle className="h-4 w-4" />
+                <span className="text-xs">Alerts</span>
+              </Button>
+            </Link>
+            <Link href="/device">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col gap-1 py-3 border-dashed border-primary/20 text-primary hover:bg-primary/5">
+                <Wifi className="h-4 w-4" />
+                <span className="text-xs">Device</span>
+              </Button>
+            </Link>
+            <Link href="/appointments">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col gap-1 py-3 border-dashed border-primary/20 text-primary hover:bg-primary/5">
+                <Calendar className="h-4 w-4" />
+                <span className="text-xs">Appts</span>
+              </Button>
+            </Link>
+            <a href="/api/oauth/login">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col gap-1 py-3 border-dashed border-primary/20 text-primary hover:bg-primary/5">
+                <Users className="h-4 w-4" />
+                <span className="text-xs">Sign In</span>
+              </Button>
+            </a>
+          </div>
+        </div>
       </main>
     </div>
   );

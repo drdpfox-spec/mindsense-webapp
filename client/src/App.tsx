@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import Appointments from "./pages/Appointments";
 import CareTeam from "./pages/CareTeam";
 import Demo from "./pages/Demo";
+import BottomNavigation from "./components/BottomNavigation";
 
 function Router() {
   return (
@@ -42,7 +43,10 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <div className="pb-20 md:pb-0">
+            <Router />
+          </div>
+          <BottomNavigation />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

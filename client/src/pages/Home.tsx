@@ -173,8 +173,8 @@ export default function Home() {
               </Button>
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {biomarkerData.slice(0, 4).map((biomarker) => (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {biomarkerData.map((biomarker) => (
               <Card key={biomarker.id}>
                 <CardContent className="pt-4">
                   <p className="text-sm font-semibold mb-2" style={{ color: biomarker.color }}>

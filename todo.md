@@ -408,3 +408,18 @@ Mental health monitoring platform with 5 validated biomarkers (CRP, IL-6, Leptin
 - [x] Connect to tRPC mutations for saving data
 - [x] Show success/error toasts
 - [x] Refresh data after successful save
+
+
+## Phase 13: Fix Home Page and Add Multi-Biomarker Button
+
+### Display All 5 Biomarkers on Home Page ✅
+- [x] Update Home page to show all 5 biomarkers (CRP, IL-6, Leptin, Proinsulin, BDNF)
+- [x] Ensure proper grid layout for all biomarker cards (grid-cols-5)
+- [x] Match Fibrosense biomarker card styling
+
+### Multi-Biomarker Button on Trends Page ✅
+- [x] Examine Fibrosense Trends page Multi-Biomarker button design
+- [x] Add Multi-Biomarker button to MindSense Trends page
+- [x] Match Fibrosense button styling (yellow background)
+- [x] Make button functional to toggle multi-biomarker selection mode
+- [x] Test button functionality

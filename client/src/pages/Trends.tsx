@@ -22,6 +22,7 @@ export default function Trends() {
   const [selectedBiomarker, setSelectedBiomarker] = useState(BIOMARKER_LIST[0].id);
   const [selectedBiomarkers, setSelectedBiomarkers] = useState<string[]>([BIOMARKER_LIST[0].id]);
   const [timeRange, setTimeRange] = useState<TimeRange>("30");
+  const [showMultiBiomarkerSelect, setShowMultiBiomarkerSelect] = useState(false);
 
   const toggleBiomarker = (biomarkerId: string) => {
     setSelectedBiomarkers((prev) =>
@@ -88,6 +89,17 @@ export default function Trends() {
                 className={viewMode === "single" ? "bg-yellow-400 hover:bg-yellow-500 text-black" : ""}
               >
                 Single Biomarker
+              </Button>
+              <Button
+                variant={viewMode === "compare" ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setViewMode("compare");
+                  setShowMultiBiomarkerSelect(true);
+                }}
+                className={viewMode === "compare" ? "bg-yellow-400 hover:bg-yellow-500 text-black" : ""}
+              >
+                Multi-Biomarker
               </Button>
             </div>
 

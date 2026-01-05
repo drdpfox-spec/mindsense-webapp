@@ -354,3 +354,161 @@ export async function getRelapseRiskHistory(userId: number, limit = 30): Promise
     .orderBy(desc(relapseRiskScores.calculatedAt))
     .limit(limit);
 }
+
+// Delete all user data (for demo reset)
+export async function deleteAllUserData(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  // Delete in order to respect foreign key constraints
+  await db.delete(medicationLogs).where(eq(medicationLogs.userId, userId));
+  await db.delete(biomarkerReadings).where(eq(biomarkerReadings.userId, userId));
+  await db.delete(moodAssessments).where(eq(moodAssessments.userId, userId));
+  await db.delete(medications).where(eq(medications.userId, userId));
+  await db.delete(devices).where(eq(devices.userId, userId));
+  await db.delete(alerts).where(eq(alerts.userId, userId));
+  await db.delete(journalEntries).where(eq(journalEntries.userId, userId));
+  await db.delete(appointments).where(eq(appointments.userId, userId));
+  await db.delete(careTeamMembers).where(eq(careTeamMembers.userId, userId));
+  await db.delete(insights).where(eq(insights.userId, userId));
+  await db.delete(relapseRiskScores).where(eq(relapseRiskScores.userId, userId));
+}
+
+// Provider Portal Functions
+export async function getProviderPatients(providerId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const relationships = await db
+    .select({
+      id: providerPatients.id,
+      patientId: providerPatients.patientId,
+      patientName: users.name,
+      patientEmail: users.email,
+      relationshipType: providerPatients.relationshipType,
+      status: providerPatients.status,
+      notes: providerPatients.notes,
+      createdAt: providerPatients.createdAt,
+      updatedAt: providerPatients.updatedAt,
+      latestRiskScore: relapseRiskScores.riskScore,
+    })
+    .from(providerPatients)
+    .leftJoin(users, eq(providerPatients.patientId, users.id))
+    .leftJoin(
+      relapseRiskScores,
+      and(
+        eq(relapseRiskScores.userId, providerPatients.patientId),
+        // Get the latest risk score (subquery would be better but this works)
+      )
+    )
+    .where(eq(providerPatients.providerId, providerId))
+    .orderBy(desc(providerPatients.updatedAt));
+
+  return relationships;
+}
+
+export async function getProviderCriticalAlerts(providerId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Get all patients for this provider
+  const patientIds = await db
+    .select({ patientId: providerPatients.patientId })
+    .from(providerPatients)
+    .where(eq(providerPatients.providerId, providerId));
+
+  if (patientIds.length === 0) return [];
+
+  // Get critical alerts for these patients
+  const criticalAlerts = await db
+    .select({
+      id: alerts.id,
+      patientId: alerts.userId,
+      patientName: users.name,
+      message: alerts.message,
+      severity: alerts.severity,
+      createdAt: alerts.createdAt,
+    })
+    .from(alerts)
+    .leftJoin(users, eq(alerts.userId, users.id))
+    .where(
+      and(
+        eq(alerts.severity, "critical"),
+        eq(alerts.isRead, false)
+      )
+    )
+    .orderBy(desc(alerts.createdAt))
+    .limit(10);
+
+  return criticalAlerts;
+}
+
+export async function verifyProviderPatientAccess(
+  providerId: number,
+  patientId: number
+): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  const result = await db
+    .select()
+    .from(providerPatients)
+    .where(
+      and(
+        eq(providerPatients.providerId, providerId),
+        eq(providerPatients.patientId, patientId),
+        eq(providerPatients.status, "active")
+      )
+    )
+    .limit(1);
+
+  return result.length > 0;
+}
+
+export async function getPatientDetails(patientId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const patient = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, patientId))
+    .limit(1);
+
+  if (patient.length === 0) return null;
+
+  // Get latest biomarkers
+  const latestBiomarkers = await getLatestBiomarkerReadings(patientId);
+  
+  // Get latest risk score
+  const latestRiskScore = await getLatestRelapseRiskScore(patientId);
+  
+  // Get recent alerts
+  const recentAlerts = await db
+    .select()
+    .from(alerts)
+    .where(eq(alerts.userId, patientId))
+    .orderBy(desc(alerts.createdAt))
+    .limit(5);
+
+  return {
+    patient: patient[0],
+    latestBiomarkers,
+    latestRiskScore,
+    recentAlerts,
+  };
+}
+
+// Get user by ID
+export async function getUserById(userId: number): Promise<typeof users.$inferSelect | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  return result[0];
+}

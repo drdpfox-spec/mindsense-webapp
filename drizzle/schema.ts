@@ -9,7 +9,7 @@ export const users = mysqlTable("users", {
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: mysqlEnum("role", ["user", "admin", "provider"]).default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -17,6 +17,23 @@ export const users = mysqlTable("users", {
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+
+/**
+ * Provider-Patient relationships for healthcare provider portal
+ */
+export const providerPatients = mysqlTable("provider_patients", {
+  id: int("id").autoincrement().primaryKey(),
+  providerId: int("provider_id").notNull(),
+  patientId: int("patient_id").notNull(),
+  relationshipType: mysqlEnum("relationship_type", ["primary", "specialist", "therapist", "consultant"]).default("primary").notNull(),
+  status: mysqlEnum("status", ["active", "inactive", "pending"]).default("active").notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ProviderPatient = typeof providerPatients.$inferSelect;
+export type InsertProviderPatient = typeof providerPatients.$inferInsert;
 
 /**
  * Biomarker readings - 5 validated biomarkers for mental health monitoring

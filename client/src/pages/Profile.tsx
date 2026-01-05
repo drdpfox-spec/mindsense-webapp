@@ -157,6 +157,26 @@ export default function Profile() {
     toast.success("Data backup downloaded");
   };
 
+  const utils = trpc.useUtils();
+
+  const handleExportFHIR = async () => {
+    try {
+      const fhirBundle = await utils.fhir.exportBundle.fetch();
+      const dataStr = JSON.stringify(fhirBundle, null, 2);
+      const dataBlob = new Blob([dataStr], { type: "application/fhir+json" });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `mindsense-fhir-export-${new Date().toISOString().split("T")[0]}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success("FHIR bundle exported successfully");
+    } catch (error) {
+      console.error("FHIR export error:", error);
+      toast.error("Failed to export FHIR data");
+    }
+  };
+
   const handleDataRestore = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -256,6 +276,14 @@ export default function Profile() {
             >
               <Download className="h-4 w-4 mr-2" />
               Download Data Backup
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={handleExportFHIR}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Export FHIR (EHR Integration)
             </Button>
             <Button
               variant="outline"

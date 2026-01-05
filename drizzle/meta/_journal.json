@@ -15,6 +15,13 @@
       "when": 1767597053975,
       "tag": "0001_amusing_khan",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1767602017328,
+      "tag": "0002_clammy_sphinx",
+      "breakpoints": true
     }
   ]
 }

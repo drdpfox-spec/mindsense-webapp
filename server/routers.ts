@@ -238,6 +238,121 @@ export const appRouter = router({
         return await db.getRelapseRiskHistory(ctx.user.id, input?.limit);
       }),
   }),
+
+  // Demo Mode - Sample Data Generation
+  demo: router({
+    generateSampleData: protectedProcedure
+      .input(
+        z.object({
+          daysOfHistory: z.number().min(7).max(90).default(30),
+          includePatterns: z.boolean().default(true),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { generateSampleData } = await import("./sample-data-generator");
+        const sampleData = await generateSampleData(ctx.user.id, input);
+
+        // Insert all sample data
+        const results = {
+          biomarkerReadings: 0,
+          moodAssessments: 0,
+          journalEntries: 0,
+          medications: 0,
+          appointments: 0,
+          careTeam: 0,
+        };
+
+        // Insert biomarker readings
+        for (const reading of sampleData.biomarkerReadings) {
+          await db.createBiomarkerReading(reading);
+          results.biomarkerReadings++;
+        }
+
+        // Insert mood assessments
+        for (const assessment of sampleData.moodAssessments) {
+          await db.createMoodAssessment(assessment);
+          results.moodAssessments++;
+        }
+
+        // Insert journal entries
+        for (const entry of sampleData.journalEntries) {
+          await db.createJournalEntry(entry);
+          results.journalEntries++;
+        }
+
+        // Insert medications
+        for (const medication of sampleData.medications) {
+          await db.createMedication(medication);
+          results.medications++;
+        }
+
+        // Insert appointments
+        for (const appointment of sampleData.appointments) {
+          await db.createAppointment(appointment);
+          results.appointments++;
+        }
+
+        // Insert care team members
+        for (const member of sampleData.careTeam) {
+          await db.createCareTeamMember(member);
+          results.careTeam++;
+        }
+
+        return {
+          success: true,
+          message: "Sample data generated successfully",
+          results,
+        };
+      }),
+
+    clearAllData: protectedProcedure.mutation(async ({ ctx }) => {
+      // Clear all user data (for demo reset)
+      await db.deleteAllUserData(ctx.user.id);
+      return {
+        success: true,
+        message: "All data cleared successfully",
+      };
+    }),
+  }),
+
+  // Provider Portal - Healthcare provider features
+  provider: router({
+    getPatients: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "provider") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Provider access required" });
+      }
+      return await db.getProviderPatients(ctx.user.id);
+    }),
+
+    getCriticalAlerts: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "provider") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Provider access required" });
+      }
+      return await db.getProviderCriticalAlerts(ctx.user.id);
+    }),
+
+    getPatientDetails: protectedProcedure
+      .input(z.object({ patientId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        if (ctx.user.role !== "provider") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Provider access required" });
+        }
+        // Verify provider has access to this patient
+        const hasAccess = await db.verifyProviderPatientAccess(ctx.user.id, input.patientId);
+        if (!hasAccess) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "No access to this patient" });
+        }
+        return await db.getPatientDetails(input.patientId);
+      }),
+  }),
+
+  // FHIR Export - EHR Integration
+  fhir: router({
+    exportBundle: protectedProcedure.query(async ({ ctx }) => {
+      const { generateFHIRBundle } = await import("./fhir-export");
+      return await generateFHIRBundle(ctx.user.id);
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

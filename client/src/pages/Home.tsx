@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { Activity, Calendar, Users, Wifi, WifiOff, Battery, TrendingUp, TrendingDown, Minus, AlertCircle } from "lucide-react";
 import { Link } from "wouter";
 import { BIOMARKER_LIST } from "@shared/biomarkers";
+import DemoModeCard from "@/components/DemoModeCard";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -86,6 +87,9 @@ export default function Home() {
       </header>
 
       <main className="container mx-auto px-6 py-8 space-y-8">
+        {/* Demo Mode */}
+        <DemoModeCard />
+
         {/* Current Status */}
         <Card>
           <CardHeader className="border-b">

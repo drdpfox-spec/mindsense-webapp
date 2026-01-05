@@ -173,8 +173,25 @@ export const appRouter = router({
       }),
     
     generate: protectedProcedure.query(async ({ ctx }) => {
-      const biomarkerReadings = await db.getBiomarkerHistory(ctx.user.id, 30);
-      const moodAssessments = await db.getMoodAssessments(ctx.user.id, 30);
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+      const dbReadings = await db.getBiomarkerReadings(ctx.user.id, startDate, endDate);
+      const dbMoodAssessments = await db.getMoodAssessments(ctx.user.id, 30);
+      
+      // Map database readings to AI insights format
+      const biomarkerReadings = dbReadings.map(r => ({
+        biomarkerType: r.biomarkerType,
+        value: r.value,
+        readingDate: r.measuredAt
+      }));
+      
+      const moodAssessments = dbMoodAssessments.map(m => ({
+        assessmentType: m.assessmentType,
+        moodScore: m.moodScore,
+        totalScore: m.totalScore,
+        assessmentDate: m.assessmentDate
+      }));
       
       const { generateInsights } = await import("./ai-insights");
       return generateInsights(biomarkerReadings, moodAssessments);

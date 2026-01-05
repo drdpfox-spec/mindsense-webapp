@@ -29,8 +29,12 @@ export default function Trends() {
   const [selectedBiomarkers, setSelectedBiomarkers] = useState<string[]>(["CRP", "IL6"]);
   const [comparisonMode, setComparisonMode] = useState(false);
 
-  const { data: biomarkerReadings, isLoading } = trpc.biomarkers.getHistory.useQuery(
-    { days: timeRange },
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - timeRange);
+  
+  const { data: biomarkerReadings, isLoading } = trpc.biomarkers.getByDateRange.useQuery(
+    { startDate, endDate },
     { enabled: isAuthenticated }
   );
 
@@ -43,11 +47,11 @@ export default function Trends() {
   const exportData = (format: "csv" | "json" | "pdf") => {
     if (!biomarkerReadings) return;
 
-    const selectedData = biomarkerReadings.filter((r) => selectedBiomarkers.includes(r.biomarkerType));
+    const selectedData = biomarkerReadings.filter((r: any) => selectedBiomarkers.includes(r.biomarkerType));
 
     if (format === "csv") {
       const headers = ["Date", "Biomarker", "Value", "Unit"];
-      const rows = selectedData.map((r) => [
+      const rows = selectedData.map((r: any) => [
         new Date(r.readingDate).toLocaleDateString(),
         r.biomarkerType,
         r.value.toString(),
@@ -65,7 +69,7 @@ export default function Trends() {
         {
           exportDate: new Date().toISOString(),
           timeRange: `${timeRange} days`,
-          biomarkers: selectedData.map((r) => ({
+          biomarkers: selectedData.map((r: any) => ({
             date: r.readingDate,
             biomarker: r.biomarkerType,
             value: r.value,
@@ -90,7 +94,7 @@ export default function Trends() {
     if (!biomarkerReadings) return null;
 
     const dates = Array.from(
-      new Set(biomarkerReadings.map((r) => new Date(r.readingDate).toLocaleDateString()))
+      new Set(biomarkerReadings.map((r: any) => new Date(r.readingDate).toLocaleDateString()))
     ).sort();
 
     const datasets = selectedBiomarkers.map((biomarkerId) => {
@@ -99,7 +103,7 @@ export default function Trends() {
 
       const data = dates.map((date) => {
         const reading = biomarkerReadings.find(
-          (r) => r.biomarkerType === biomarkerId && new Date(r.readingDate).toLocaleDateString() === date
+          (r: any) => r.biomarkerType === biomarkerId && new Date(r.readingDate).toLocaleDateString() === date
         );
         if (!reading) return null;
 
@@ -172,13 +176,13 @@ export default function Trends() {
   const getStatistics = (biomarkerId: string) => {
     if (!biomarkerReadings) return null;
 
-    const readings = biomarkerReadings.filter((r) => r.biomarkerType === biomarkerId);
+    const readings = biomarkerReadings.filter((r: any) => r.biomarkerType === biomarkerId);
     if (readings.length === 0) return null;
 
-    const values = readings.map((r) => r.value);
+    const values = readings.map((r: any) => r.value);
     const current = values[values.length - 1];
     const previous = values[values.length - 2];
-    const average = values.reduce((a, b) => a + b, 0) / values.length;
+    const average = values.reduce((a: number, b: number) => a + b, 0) / values.length;
     const min = Math.min(...values);
     const max = Math.max(...values);
     const change = previous ? ((current - previous) / previous) * 100 : 0;

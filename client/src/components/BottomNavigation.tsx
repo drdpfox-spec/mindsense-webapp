@@ -1,16 +1,16 @@
 import { Link, useLocation } from "wouter";
-import { Home, TrendingUp, AlertCircle, BookOpen, Pill, Brain, Calendar, Users, Settings } from "lucide-react";
+import { Home, TrendingUp, AlertCircle, BookOpen, Pill, Brain, Calendar, Users, Settings, Wifi } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home", icon: Home },
   { href: "/trends", label: "Trends", icon: TrendingUp },
+  { href: "/device", label: "Device", icon: Wifi },
   { href: "/alerts", label: "Alerts", icon: AlertCircle },
   { href: "/journal", label: "Journal", icon: BookOpen },
   { href: "/medications", label: "Meds", icon: Pill },
   { href: "/insights", label: "Insights", icon: Brain },
   { href: "/appointments", label: "Appointments", icon: Calendar },
-  { href: "/care-team", label: "Team", icon: Users },
   { href: "/profile", label: "Profile", icon: Settings },
 ];
 

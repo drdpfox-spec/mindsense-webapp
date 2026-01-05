@@ -10,6 +10,30 @@ function getQueryParam(req: Request, key: string): string | undefined {
 }
 
 export function registerOAuthRoutes(app: Express) {
+  // Login route - redirects to OAuth portal
+  app.get("/api/oauth/login", (req: Request, res: Response) => {
+    try {
+      const oauthPortalUrl = process.env.VITE_OAUTH_PORTAL_URL;
+      const appId = process.env.VITE_APP_ID;
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const redirectUri = `${protocol}://${host}/api/oauth/callback`;
+      const state = Buffer.from(redirectUri).toString('base64');
+
+      const url = new URL(`${oauthPortalUrl}/app-auth`);
+      url.searchParams.set('appId', appId!);
+      url.searchParams.set('redirectUri', redirectUri);
+      url.searchParams.set('state', state);
+      url.searchParams.set('type', 'signIn');
+
+      res.redirect(302, url.toString());
+    } catch (error) {
+      console.error("[OAuth] Login redirect failed", error);
+      res.status(500).json({ error: "Failed to initiate OAuth login" });
+    }
+  });
+
+  // Callback route - handles OAuth response
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");

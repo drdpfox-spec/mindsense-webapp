@@ -205,3 +205,12 @@ Mental health monitoring platform with 5 validated biomarkers (CRP, IL-6, Leptin
 - [x] Ensure all touch targets are at least 44x44px
 - [x] Test on various screen sizes (320px, 375px, 414px, 768px)
 - [x] Optimize images and assets for mobile performance
+
+
+## Bug Fixes - OAuth Sign-In Issue ✅
+
+- [x] Diagnose OAuth routing causing 404 error on sign-in
+- [x] Fix OAuth /api/oauth/login endpoint returning 404
+- [x] Verify OAuth server routes are properly registered
+- [x] Test sign-in flow end-to-end
+- [x] Verify user session persistence

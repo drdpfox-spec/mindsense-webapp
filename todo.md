@@ -251,3 +251,20 @@ Mental health monitoring platform with 5 validated biomarkers (CRP, IL-6, Leptin
 - [x] Add export to FHIR JSON button in Profile
 - [x] Validate FHIR output against specification
 - [x] Add documentation for EHR integration
+
+
+## Bug Fixes - Login Issues
+
+- [ ] Fix OAuth login not working for users
+- [ ] Verify OAuth callback handling
+- [ ] Test sign-in flow end-to-end
+- [ ] Ensure session persistence after login
+
+## Feature - Preview Mode Without Login ✅
+
+- [x] Create demo user account
+- [x] Add "Try Demo" button to landing page
+- [x] Populate demo account with sample data
+- [x] Allow preview without authentication
+- [x] Show "Demo Mode" indicator in UI
+- [x] Add option to sign in from demo mode

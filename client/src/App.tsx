@@ -14,11 +14,13 @@ import Insights from "./pages/Insights";
 import Profile from "./pages/Profile";
 import Appointments from "./pages/Appointments";
 import CareTeam from "./pages/CareTeam";
+import Demo from "./pages/Demo";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/demo"} component={Demo} />
       <Route path={"/trends"} component={Trends} />
       <Route path={"/device"} component={Device} />
       <Route path={"/alerts"} component={Alerts} />

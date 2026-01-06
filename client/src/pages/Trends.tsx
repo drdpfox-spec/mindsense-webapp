@@ -4,10 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Activity } from "lucide-react";
+import { ArrowLeft, Activity, Download, FileText, FileSpreadsheet } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { BIOMARKER_LIST } from "@shared/biomarkers";
+import { exportToCSV, exportToPDF } from "@/lib/exportUtils";
+import { toast } from "sonner";
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import type { ChartConfiguration } from "chart.js";
 
@@ -23,6 +25,8 @@ export default function Trends() {
   const [selectedBiomarkers, setSelectedBiomarkers] = useState<string[]>([BIOMARKER_LIST[0].id]);
   const [timeRange, setTimeRange] = useState<TimeRange>("30");
   const [showMultiBiomarkerSelect, setShowMultiBiomarkerSelect] = useState(false);
+  const [chartCanvasRef, setChartCanvasRef] = useState<HTMLCanvasElement | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const toggleBiomarker = (biomarkerId: string) => {
     setSelectedBiomarkers((prev) =>
@@ -30,6 +34,39 @@ export default function Trends() {
         ? prev.filter((id) => id !== biomarkerId)
         : [...prev, biomarkerId]
     );
+  };
+
+  const handleExportCSV = () => {
+    if (!biomarkerReadings || biomarkerReadings.length === 0) {
+      toast.error("No data available to export");
+      return;
+    }
+
+    try {
+      const selectedBiomarkerIds = viewMode === "single" ? [selectedBiomarker] : selectedBiomarkers;
+      exportToCSV(biomarkerReadings, selectedBiomarkerIds, timeRange);
+      toast.success("CSV exported successfully!");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to export CSV");
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!biomarkerReadings || biomarkerReadings.length === 0) {
+      toast.error("No data available to export");
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      const selectedBiomarkerIds = viewMode === "single" ? [selectedBiomarker] : selectedBiomarkers;
+      await exportToPDF(biomarkerReadings, selectedBiomarkerIds, timeRange, chartCanvasRef);
+      toast.success("PDF exported successfully!");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to export PDF");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const { data: user } = trpc.auth.me.useQuery();
@@ -172,6 +209,40 @@ export default function Trends() {
           </CardContent>
         </Card>
 
+        {/* Export Section */}
+        {hasData && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Export Data</CardTitle>
+              <CardDescription className="text-xs">Download your biomarker data for sharing with healthcare providers</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportCSV}
+                  disabled={isExporting}
+                  className="border-dashed border-primary text-primary hover:bg-primary/10"
+                >
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  Export CSV
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportPDF}
+                  disabled={isExporting}
+                  className="border-dashed border-primary text-primary hover:bg-primary/10"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  {isExporting ? "Generating PDF..." : "Export PDF"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Chart Area */}
         <Card className="min-h-[400px]">
           <CardContent className="pt-6">
@@ -189,6 +260,7 @@ export default function Trends() {
                 readings={biomarkerReadings}
                 selectedBiomarkers={viewMode === "single" ? [selectedBiomarker] : selectedBiomarkers}
                 timeRange={timeRange}
+                onChartReady={(canvas) => setChartCanvasRef(canvas)}
               />
             )}
           </CardContent>
@@ -204,16 +276,23 @@ function BiomarkerChart({
   readings,
   selectedBiomarkers,
   timeRange,
+  onChartReady,
 }: {
   readings: any[];
   selectedBiomarkers: string[];
   timeRange: string;
+  onChartReady?: (canvas: HTMLCanvasElement | null) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current || !readings) return;
+
+    // Notify parent component about canvas availability
+    if (onChartReady) {
+      onChartReady(canvasRef.current);
+    }
 
     // Get all unique timestamps
     const allTimestamps = [...new Set(readings.map((r) => r.timestamp))]

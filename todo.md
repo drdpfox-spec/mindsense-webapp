@@ -445,3 +445,29 @@ Mental health monitoring platform with 5 validated biomarkers (CRP, IL-6, Leptin
 - [x] Add color-coded legend for multiple biomarkers
 - [x] Handle empty state when no data available
 - [x] Test chart with sample data
+
+
+## Phase 15: Data Export Features on Trends Page ✅
+
+### CSV Export ✅
+- [x] Create CSV export utility function
+- [x] Format biomarker data for CSV (date, biomarker type, value, unit)
+- [x] Add CSV download button to Trends page
+- [x] Include metadata (date range, user info) in CSV header
+- [x] Test CSV export with multiple biomarkers
+
+### PDF Export ✅
+- [x] Install jsPDF library (already installed)
+- [x] Create PDF export utility with chart image
+- [x] Capture Chart.js canvas as image for PDF
+- [x] Format biomarker data table in PDF
+- [x] Add branding and metadata to PDF header
+- [x] Add PDF download button to Trends page
+- [x] Test PDF export with charts and data tables
+
+### UI Integration ✅
+- [x] Add export buttons section to Trends page
+- [x] Style export buttons to match FibroSense design
+- [x] Add loading states during export generation
+- [x] Show success/error notifications
+- [x] Test on mobile and desktop

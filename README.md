@@ -4,6 +4,20 @@
 
 MindSense is a comprehensive web application designed to help individuals and healthcare providers track, analyze, and understand mental health biomarkers over time. The platform combines real-time data collection with advanced visualization and AI-powered insights to support better mental health outcomes.
 
+## 📸 Screenshots
+
+### Demo Homepage
+![Demo Homepage](screenshots/demo-homepage.png)
+*Demo mode showing biomarker cards with baseline reference ranges*
+
+### Trends Visualization
+![Trends Page](screenshots/trends-page.png)
+*Interactive Chart.js visualization with time range filtering*
+
+### Multi-Biomarker Comparison
+![Multi-Biomarker View](screenshots/multi-biomarker-view.png)
+*Compare multiple biomarkers simultaneously with color-coded charts*
+
 ## ✨ Features
 
 ### Core Functionality

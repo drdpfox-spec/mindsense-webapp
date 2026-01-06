@@ -1,4 +1,4 @@
-import { boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, decimal, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -43,11 +43,11 @@ export const biomarkerReadings = mysqlTable("biomarker_readings", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("user_id").notNull(),
   biomarkerType: mysqlEnum("biomarker_type", ["CRP", "IL6", "LEPTIN", "PROINSULIN", "BDNF"]).notNull(),
-  value: int("value").notNull(), // Stored in appropriate units (mg/L, pg/mL, ng/mL)
+  value: decimal("value", { precision: 10, scale: 2 }).notNull(), // Stored in appropriate units (mg/L, pg/mL, ng/mL)
   unit: varchar("unit", { length: 16 }).notNull(),
   measuredAt: timestamp("measured_at").notNull(),
   deviceId: int("device_id"),
-  source: mysqlEnum("source", ["patch", "lab", "manual"]).default("patch").notNull(),
+  source: mysqlEnum("source", ["patch", "lab", "manual", "demo"]).default("patch").notNull(),
   qualityScore: int("quality_score"), // 0-100 quality indicator
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

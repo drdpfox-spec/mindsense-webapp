@@ -162,6 +162,13 @@ export async function getLatestBiomarkerReadings(userId: number): Promise<Biomar
   return Array.from(latestByType.values());
 }
 
+export async function createBiomarkerReading(reading: Omit<BiomarkerReading, "id" | "createdAt">): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.insert(biomarkerReadings).values(reading as any);
+}
+
 // Mood Assessments
 export async function getMoodAssessments(userId: number, limit = 50): Promise<MoodAssessment[]> {
   const db = await getDb();

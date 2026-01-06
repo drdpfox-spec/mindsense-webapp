@@ -1,0 +1,2 @@
+ALTER TABLE `biomarker_readings` MODIFY COLUMN `value` decimal(10,2) NOT NULL;--> statement-breakpoint
+ALTER TABLE `biomarker_readings` MODIFY COLUMN `source` enum('patch','lab','manual','demo') NOT NULL DEFAULT 'patch';

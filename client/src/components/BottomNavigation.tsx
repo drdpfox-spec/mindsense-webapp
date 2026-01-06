@@ -25,19 +25,19 @@ export default function BottomNavigation() {
           const isActive = location === item.href;
 
           return (
-            <Link key={item.href} href={item.href}>
-              <a
-                className={cn(
-                  "flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-max transition-colors",
-                  "hover:text-primary",
-                  isActive
-                    ? "text-primary border-t-2 border-primary"
-                    : "text-muted-foreground"
-                )}
-              >
-                <Icon className="h-5 w-5 md:h-6 md:w-6" />
-                <span className="text-xs md:text-sm font-medium">{item.label}</span>
-              </a>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-max transition-colors",
+                "hover:text-primary",
+                isActive
+                  ? "text-primary border-t-2 border-primary"
+                  : "text-muted-foreground"
+              )}
+            >
+              <Icon className="h-5 w-5 md:h-6 md:w-6" />
+              <span className="text-xs md:text-sm font-medium">{item.label}</span>
             </Link>
           );
         })}

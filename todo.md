@@ -471,3 +471,47 @@ Mental health monitoring platform with 5 validated biomarkers (CRP, IL-6, Leptin
 - [x] Add loading states during export generation
 - [x] Show success/error notifications
 - [x] Test on mobile and desktop
+
+
+## Phase 16: Comprehensive Button and Functionality Testing
+
+### Demo Page Testing
+- [ ] Test "Sign In" button in header
+- [ ] Test "Generate Sample Data" button
+- [ ] Test "Schedule one" link in Appointments card
+- [ ] Test "Add a provider" link in Care Team card
+- [ ] Test bottom navigation links (all 8 tabs)
+
+### Authenticated Home Page Testing
+- [ ] Test "Profile" button in header
+- [ ] Test "Generate Sample Data" button (when no data)
+- [ ] Test "Schedule one" link in Appointments
+- [ ] Test "Add a provider" link in Care Team
+- [ ] Test bottom navigation functionality
+
+### Trends Page Testing
+- [ ] Test "Back" button
+- [ ] Test "Compare Periods" filter button
+- [ ] Test "Single Biomarker" filter button
+- [ ] Test "Multi-Biomarker" filter button
+- [ ] Test biomarker dropdown selector
+- [ ] Test time range dropdown (7, 30, 90 days)
+- [ ] Test biomarker checkboxes in multi-biomarker mode
+- [ ] Test "Export CSV" button (with data)
+- [ ] Test "Export PDF" button (with data)
+- [ ] Test "Go to Dashboard" button (empty state)
+
+### Other Pages Testing
+- [ ] Test Device page navigation and buttons
+- [ ] Test Alerts page navigation
+- [ ] Test Journal page navigation and buttons
+- [ ] Test Meds page navigation and buttons
+- [ ] Test Insights page navigation
+- [ ] Test Appointments page navigation and buttons
+- [ ] Test Profile page navigation and buttons
+
+### Navigation Testing
+- [ ] Test all bottom nav tabs route correctly
+- [ ] Test back navigation works
+- [ ] Test deep linking to specific pages
+- [ ] Test redirect from unauthenticated to demo

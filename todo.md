@@ -423,3 +423,25 @@ Mental health monitoring platform with 5 validated biomarkers (CRP, IL-6, Leptin
 - [x] Match Fibrosense button styling (yellow background)
 - [x] Make button functional to toggle multi-biomarker selection mode
 - [x] Test button functionality
+
+
+## Phase 14: Final Feature Implementations
+
+### Wire Generate Sample Data Button ✅
+- [x] Connect Generate Sample Data button in Demo.tsx to tRPC mutation
+- [x] Test data generation (30-90 days of biomarkers, mood, journal, meds, appointments)
+- [x] Show loading state during generation
+- [x] Display success message after completion
+
+### Add Biomarker Baseline Values ✅
+- [x] Add reference range display to Home page biomarker cards
+- [x] Show baseline measurements for each biomarker
+- [x] Add color coding for normal/abnormal values
+- [x] Display units and normal ranges
+
+### Chart Visualization on Trends Page ✅
+- [x] Implement Chart.js line chart for single biomarker mode
+- [x] Implement multi-biomarker comparison chart
+- [x] Add color-coded legend for multiple biomarkers
+- [x] Handle empty state when no data available
+- [x] Test chart with sample data

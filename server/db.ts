@@ -512,3 +512,24 @@ export async function getUserById(userId: number): Promise<typeof users.$inferSe
 
   return result[0];
 }
+
+export async function createMedication(medication: Omit<Medication, "id" | "createdAt" | "updatedAt">): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.insert(medications).values(medication as any);
+}
+
+export async function createAppointment(appointment: Omit<Appointment, "id" | "createdAt" | "updatedAt">): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.insert(appointments).values(appointment as any);
+}
+
+export async function createCareTeamMember(member: Omit<CareTeamMember, "id" | "createdAt" | "updatedAt">): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.insert(careTeamMembers).values(member as any);
+}

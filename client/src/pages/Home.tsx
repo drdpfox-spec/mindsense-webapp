@@ -1,13 +1,32 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, Calendar, Users, WifiOff, Battery, ArrowRight, Sparkles } from "lucide-react";
+import { Activity, Calendar, Users, WifiOff, Battery, ArrowRight, Sparkles, AlertCircle } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { BIOMARKER_LIST } from "@shared/biomarkers";
+import { toast } from "sonner";
 
 export default function Home() {
   const { data: user, isLoading: userLoading } = trpc.auth.me.useQuery();
   const isAuthenticated = !!user && !userLoading;
+
+  const generateSampleDataMutation = trpc.demo.generateSampleData.useMutation({
+    onSuccess: () => {
+      toast.success("Sample data generated successfully! Refresh the page to see your data.");
+      // Optionally refresh the page after a delay
+      setTimeout(() => window.location.reload(), 2000);
+    },
+    onError: (error) => {
+      toast.error(`Failed to generate sample data: ${error.message}`);
+    },
+  });
+
+  const handleGenerateSampleData = () => {
+    generateSampleDataMutation.mutate({
+      daysOfHistory: 60,
+      includePatterns: true,
+    });
+  };
 
   const { data: latestBiomarkers } = trpc.biomarkers.getLatest.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -64,6 +83,29 @@ export default function Home() {
       </header>
 
       <main className="container mx-auto px-4 py-6 space-y-6">
+        {/* Sample Data Banner - Show if no biomarker data */}
+        {(!latestBiomarkers || latestBiomarkers.length === 0) && (
+          <Card className="border-primary/50 bg-primary/5">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-primary" />
+                  <p className="text-sm font-medium">
+                    No data yet? Generate sample data to explore MindSense features.
+                  </p>
+                </div>
+                <Button 
+                  className="bg-primary hover:bg-primary/90 text-white"
+                  onClick={handleGenerateSampleData}
+                  disabled={generateSampleDataMutation.isLoading}
+                >
+                  <Activity className="h-4 w-4 mr-2" />
+                  {generateSampleDataMutation.isLoading ? "Generating..." : "Generate Sample Data"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         {/* Two Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Upcoming Appointments Card */}
@@ -180,11 +222,14 @@ export default function Home() {
                   <p className="text-sm font-semibold mb-2" style={{ color: biomarker.color }}>
                     {biomarker.id}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {biomarker.value ? `${biomarker.value.toFixed(1)} ${biomarker.unit}` : "— ng/mL"}
+                  <p className="text-lg font-bold text-foreground mb-1">
+                    {biomarker.value ? biomarker.value.toFixed(1) : "—"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {biomarker.unit}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {biomarker.value ? "" : "No baseline"}
+                    Normal: {biomarker.normalRange.min}-{biomarker.normalRange.max} {biomarker.unit}
                   </p>
                 </CardContent>
               </Card>

@@ -17,7 +17,10 @@ export default function Demo() {
   });
 
   const handleGenerateSampleData = () => {
-    generateSampleDataMutation.mutate();
+    generateSampleDataMutation.mutate({
+      daysOfHistory: 60,
+      includePatterns: true,
+    });
   };
 
   // Mock demo data

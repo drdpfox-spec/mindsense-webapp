@@ -515,3 +515,37 @@ Mental health monitoring platform with 5 validated biomarkers (CRP, IL-6, Leptin
 - [ ] Test back navigation works
 - [ ] Test deep linking to specific pages
 - [ ] Test redirect from unauthenticated to demo
+
+
+## Phase 17: Fix Sample Data Generator & Add E2E Tests ✅
+
+### Sample Data Generator Schema Fixes ✅
+- [x] Fix appointments schema mismatch (add title, providerName, description, etc.)
+- [x] Fix care team schema mismatch (add providerRole, organization, address, etc.)
+- [x] Convert userId from string to number in sample data
+- [x] Use correct enum values for all fields (CRP, IL6, LEPTIN, PROINSULIN, BDNF)
+- [x] Fix biomarker value type (convert to string for decimal field)
+- [x] Fix mood assessments schema (add assessmentType, mood, totalScore, responses)
+- [x] Fix journal entries schema (add entryType, title, description, severity)
+- [x] Fix medications schema (add reminderEnabled, reminderTimes, sideEffects)
+- [x] Add reportGeneratedAt field to appointments
+- [ ] Test Generate Sample Data button end-to-end (requires fixing remaining TS errors)
+
+### Bottom Navigation Verification ✅
+- [x] Hard refresh browser to clear cache
+- [x] Test navigation functionality (confirmed working via JavaScript)
+- [x] Verify nested anchor tags removed
+- [x] Confirm wouter Link component working correctly
+- [x] Identified browser automation click issue (not a code issue)
+
+### E2E Testing Setup ✅
+- [x] Install Playwright testing framework
+- [x] Configure Playwright for the project
+- [x] Create e2e test directory
+- [x] Add test scripts to package.json
+
+### E2E Test Suites ✅
+- [x] Write bottom navigation test (all 9 tabs)
+- [x] Write biomarker card display test
+- [x] Write trends page test (filters, multi-biomarker, empty state)
+- [ ] Run all tests and verify passing (requires dev server running)

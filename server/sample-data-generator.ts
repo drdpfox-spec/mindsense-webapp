@@ -10,14 +10,14 @@ export type SampleDataOptions = {
   includePatterns: boolean; // Include realistic patterns (e.g., declining mood, rising biomarkers)
 };
 
-const BIOMARKER_TYPES = ["CRP", "IL-6", "Leptin", "Proinsulin", "BDNF"] as const;
+const BIOMARKER_TYPES = ["CRP", "IL6", "LEPTIN", "PROINSULIN", "BDNF"] as const;
 
 // Normal ranges for each biomarker
 const BIOMARKER_RANGES = {
   CRP: { min: 0.5, max: 3.0, unit: "mg/L", critical: 10.0 },
-  "IL-6": { min: 1.0, max: 5.0, unit: "pg/mL", critical: 15.0 },
-  Leptin: { min: 2.0, max: 10.0, unit: "ng/mL", critical: 30.0 },
-  Proinsulin: { min: 2.0, max: 8.0, unit: "pmol/L", critical: 20.0 },
+  IL6: { min: 1.0, max: 5.0, unit: "pg/mL", critical: 15.0 },
+  LEPTIN: { min: 2.0, max: 10.0, unit: "ng/mL", critical: 30.0 },
+  PROINSULIN: { min: 2.0, max: 8.0, unit: "pmol/L", critical: 20.0 },
   BDNF: { min: 15.0, max: 30.0, unit: "ng/mL", critical: 10.0 }, // Lower is worse for BDNF
 };
 
@@ -39,7 +39,7 @@ function generateValue(
  * Generate biomarker readings
  */
 export function generateBiomarkerReadings(
-  userId: string,
+  userId: number,
   options: SampleDataOptions
 ) {
   const readings = [];
@@ -67,11 +67,12 @@ export function generateBiomarkerReadings(
       readings.push({
         userId,
         biomarkerType,
-        value: parseFloat(value.toFixed(2)),
+        value: value.toFixed(2), // Convert to string for decimal field
         unit: range.unit,
         measuredAt: date,
-        source: "demo",
-        notes: null,
+        deviceId: null,
+        source: "demo" as const,
+        qualityScore: null,
       });
     }
   }
@@ -83,7 +84,7 @@ export function generateBiomarkerReadings(
  * Generate mood assessments
  */
 export function generateMoodAssessments(
-  userId: string,
+  userId: number,
   options: SampleDataOptions
 ) {
   const assessments = [];
@@ -112,11 +113,16 @@ export function generateMoodAssessments(
 
       assessments.push({
         userId,
+        assessmentType: "mood" as const,
+        mood: null,
         moodScore,
-        anxietyScore,
-        stressScore,
-        energyLevel: Math.round(generateValue(3, 9, currentTrend, 0.3)),
-        sleepQuality: Math.round(generateValue(4, 9, currentTrend, 0.3)),
+        totalScore: moodScore,
+        responses: JSON.stringify({
+          anxiety: anxietyScore,
+          stress: stressScore,
+          energy: Math.round(generateValue(3, 9, currentTrend, 0.3)),
+          sleep: Math.round(generateValue(4, 9, currentTrend, 0.3)),
+        }),
         assessmentDate,
         notes: null,
       });
@@ -129,7 +135,7 @@ export function generateMoodAssessments(
 /**
  * Generate journal entries
  */
-export function generateJournalEntries(userId: string, options: SampleDataOptions) {
+export function generateJournalEntries(userId: number, options: SampleDataOptions) {
   const entries = [];
   const now = new Date();
 
@@ -156,9 +162,11 @@ export function generateJournalEntries(userId: string, options: SampleDataOption
 
     entries.push({
       userId,
+      entryType: "mood" as const,
       entryDate: date,
-      content,
-      mood: Math.round(Math.random() * 4) + 5, // 5-9
+      title: "Daily Mood Check-in",
+      description: content,
+      severity: Math.round(Math.random() * 4) + 5, // 5-9 (mood scale)
       tags: null,
     });
   }
@@ -169,7 +177,7 @@ export function generateJournalEntries(userId: string, options: SampleDataOption
 /**
  * Generate medications
  */
-export function generateMedications(userId: string) {
+export function generateMedications(userId: number) {
   const medications = [
     {
       name: "Sertraline",
@@ -202,13 +210,16 @@ export function generateMedications(userId: string) {
     ...med,
     endDate: null,
     isActive: true,
+    reminderEnabled: false,
+    reminderTimes: null,
+    sideEffects: null,
   }));
 }
 
 /**
  * Generate appointments
  */
-export function generateAppointments(userId: string) {
+export function generateAppointments(userId: number) {
   const now = new Date();
   const appointments = [];
 
@@ -216,17 +227,21 @@ export function generateAppointments(userId: string) {
   const pastAppointments = [
     {
       daysAgo: 30,
-      provider: "Dr. Sarah Johnson",
-      type: "Psychiatry Follow-up",
+      title: "Psychiatry Follow-up",
+      description: "Medication review and adjustment",
+      providerName: "Dr. Sarah Johnson",
+      appointmentType: "psychiatrist" as const,
       location: "Mental Health Clinic",
-      notes: "Medication review and adjustment",
+      notes: "Discussed medication efficacy and side effects",
     },
     {
       daysAgo: 14,
-      provider: "Dr. Michael Chen",
-      type: "Therapy Session",
+      title: "Therapy Session",
+      description: "Cognitive Behavioral Therapy",
+      providerName: "Dr. Michael Chen",
+      appointmentType: "therapist" as const,
       location: "Wellness Center",
-      notes: "CBT session - coping strategies",
+      notes: "CBT session - coping strategies for anxiety",
     },
   ];
 
@@ -237,12 +252,18 @@ export function generateAppointments(userId: string) {
 
     appointments.push({
       userId,
+      title: apt.title,
+      description: apt.description,
+      appointmentType: apt.appointmentType,
       appointmentDate: date,
-      provider: apt.provider,
-      appointmentType: apt.type,
       location: apt.location,
+      providerName: apt.providerName,
+      reminderSent: true,
+      reminderDays: 1,
+      reportGenerated: false,
+      reportGeneratedAt: null,
+      status: "completed" as const,
       notes: apt.notes,
-      status: "completed",
     });
   }
 
@@ -250,17 +271,21 @@ export function generateAppointments(userId: string) {
   const upcomingAppointments = [
     {
       daysAhead: 7,
-      provider: "Dr. Sarah Johnson",
-      type: "Psychiatry Check-in",
+      title: "Psychiatry Check-in",
+      description: "Monthly medication review",
+      providerName: "Dr. Sarah Johnson",
+      appointmentType: "psychiatrist" as const,
       location: "Mental Health Clinic",
-      notes: "Monthly medication review",
+      notes: "Review current medication regimen",
     },
     {
       daysAhead: 14,
-      provider: "Dr. Michael Chen",
-      type: "Therapy Session",
+      title: "Therapy Session",
+      description: "Ongoing CBT treatment",
+      providerName: "Dr. Michael Chen",
+      appointmentType: "therapist" as const,
       location: "Wellness Center",
-      notes: "Ongoing CBT treatment",
+      notes: "Continue working on stress management techniques",
     },
   ];
 
@@ -271,12 +296,18 @@ export function generateAppointments(userId: string) {
 
     appointments.push({
       userId,
+      title: apt.title,
+      description: apt.description,
+      appointmentType: apt.appointmentType,
       appointmentDate: date,
-      provider: apt.provider,
-      appointmentType: apt.type,
       location: apt.location,
+      providerName: apt.providerName,
+      reminderSent: false,
+      reminderDays: 1,
+      reportGenerated: false,
+      reportGeneratedAt: null,
+      status: "scheduled" as const,
       notes: apt.notes,
-      status: "scheduled",
     });
   }
 
@@ -286,28 +317,34 @@ export function generateAppointments(userId: string) {
 /**
  * Generate care team members
  */
-export function generateCareTeam(userId: string) {
+export function generateCareTeam(userId: number) {
   const careTeam = [
     {
       name: "Dr. Sarah Johnson",
-      role: "Psychiatrist",
+      providerRole: "psychiatrist" as const,
       specialty: "Adult Psychiatry",
       phone: "(555) 123-4567",
       email: "sjohnson@mentalhealth.example.com",
+      organization: "Mental Health Clinic",
+      address: "123 Health St, Suite 200, Medical District",
     },
     {
       name: "Dr. Michael Chen",
-      role: "Therapist",
+      providerRole: "therapist" as const,
       specialty: "Cognitive Behavioral Therapy",
       phone: "(555) 234-5678",
       email: "mchen@wellness.example.com",
+      organization: "Wellness Center",
+      address: "456 Wellness Ave, Downtown",
     },
     {
       name: "Dr. Emily Rodriguez",
-      role: "Primary Care Physician",
+      providerRole: "other" as const,
       specialty: "Family Medicine",
       phone: "(555) 345-6789",
       email: "erodriguez@primarycare.example.com",
+      organization: "Primary Care Associates",
+      address: "789 Care Blvd, Medical Plaza",
     },
   ];
 
@@ -315,6 +352,8 @@ export function generateCareTeam(userId: string) {
     userId,
     ...member,
     notes: null,
+    sharingPreferences: JSON.stringify({ trends: true, journal: true, insights: true }),
+    lastContactDate: null,
   }));
 }
 
@@ -322,7 +361,7 @@ export function generateCareTeam(userId: string) {
  * Generate complete sample dataset
  */
 export async function generateSampleData(
-  userId: string,
+  userId: number,
   options: SampleDataOptions = { daysOfHistory: 30, includePatterns: true }
 ) {
   return {

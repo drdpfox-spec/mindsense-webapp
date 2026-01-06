@@ -1,0 +1,94 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications alt+T"
+  - generic [ref=e4]:
+    - banner [ref=e5]:
+      - generic [ref=e6]:
+        - link "Back" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - button "Back" [ref=e8]:
+            - img
+            - text: Back
+        - generic [ref=e9]:
+          - img [ref=e10]
+          - heading "Biomarker Trends" [level=1] [ref=e12]
+    - main [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - generic [ref=e16]: Trend Analysis
+          - generic [ref=e17]: Visualize biomarker changes over time
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - button "Compare Periods" [ref=e20] [cursor=pointer]
+            - button "Single Biomarker" [ref=e21] [cursor=pointer]
+            - button "Multi-Biomarker" [active] [ref=e22] [cursor=pointer]
+          - generic [ref=e24]:
+            - combobox [ref=e26] [cursor=pointer]:
+              - generic: Last 30 days
+              - img
+            - generic [ref=e27]:
+              - paragraph [ref=e28]: "Select Biomarkers to Compare:"
+              - generic [ref=e29]:
+                - generic [ref=e30]:
+                  - checkbox "CRP" [checked] [ref=e31] [cursor=pointer]:
+                    - generic:
+                      - img
+                  - generic [ref=e32] [cursor=pointer]: CRP
+                - generic [ref=e33]:
+                  - checkbox "IL6" [ref=e34] [cursor=pointer]
+                  - generic [ref=e35] [cursor=pointer]: IL6
+                - generic [ref=e36]:
+                  - checkbox "LEPTIN" [ref=e37] [cursor=pointer]
+                  - generic [ref=e38] [cursor=pointer]: LEPTIN
+                - generic [ref=e39]:
+                  - checkbox "PROINSULIN" [ref=e40] [cursor=pointer]
+                  - generic [ref=e41] [cursor=pointer]: PROINSULIN
+                - generic [ref=e42]:
+                  - checkbox "BDNF" [ref=e43] [cursor=pointer]
+                  - generic [ref=e44] [cursor=pointer]: BDNF
+      - generic [ref=e47]:
+        - paragraph [ref=e48]: No measurement data available
+        - link "Go to Dashboard" [ref=e49] [cursor=pointer]:
+          - /url: /
+          - button "Go to Dashboard" [ref=e50]
+  - navigation [ref=e51]:
+    - generic [ref=e52]:
+      - link "Home" [ref=e53] [cursor=pointer]:
+        - /url: /
+        - img [ref=e54]
+        - generic [ref=e57]: Home
+      - link "Trends" [ref=e58] [cursor=pointer]:
+        - /url: /trends
+        - img [ref=e59]
+        - generic [ref=e62]: Trends
+      - link "Device" [ref=e63] [cursor=pointer]:
+        - /url: /device
+        - img [ref=e64]
+        - generic [ref=e68]: Device
+      - link "Alerts" [ref=e69] [cursor=pointer]:
+        - /url: /alerts
+        - img [ref=e70]
+        - generic [ref=e72]: Alerts
+      - link "Journal" [ref=e73] [cursor=pointer]:
+        - /url: /journal
+        - img [ref=e74]
+        - generic [ref=e76]: Journal
+      - link "Meds" [ref=e77] [cursor=pointer]:
+        - /url: /medications
+        - img [ref=e78]
+        - generic [ref=e81]: Meds
+      - link "Insights" [ref=e82] [cursor=pointer]:
+        - /url: /insights
+        - img [ref=e83]
+        - generic [ref=e93]: Insights
+      - link "Appointments" [ref=e94] [cursor=pointer]:
+        - /url: /appointments
+        - img [ref=e95]
+        - generic [ref=e97]: Appointments
+      - link "Profile" [ref=e98] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=e99]
+        - generic [ref=e102]: Profile
+```

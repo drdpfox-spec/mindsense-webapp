@@ -41,7 +41,7 @@ test.describe('Trends Page', () => {
     // Click back button
     await backButton.click();
     
-    // Should navigate to home page
-    await expect(page).toHaveURL('/');
+    // Should navigate to home page (which redirects to demo for unauthenticated users)
+    await expect(page).toHaveURL('/demo');
   });
 });

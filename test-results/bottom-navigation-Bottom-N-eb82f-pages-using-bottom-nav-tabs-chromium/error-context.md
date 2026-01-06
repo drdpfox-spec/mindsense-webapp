@@ -1,0 +1,181 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications alt+T"
+  - generic [ref=e4]:
+    - banner [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img [ref=e9]
+          - generic [ref=e11]:
+            - heading "MindSense" [level=1] [ref=e12]
+            - paragraph [ref=e13]: Demo Mode - Sample Data
+        - link "Sign In" [ref=e14] [cursor=pointer]:
+          - /url: /api/oauth/login
+          - button "Sign In" [ref=e15]
+    - main [ref=e16]:
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - img [ref=e21]
+          - paragraph [ref=e23]:
+            - text: You're viewing demo data.
+            - link "Sign in" [ref=e24] [cursor=pointer]:
+              - /url: /api/oauth/login
+            - text: to save your own health data.
+        - button "Generate Sample Data" [ref=e25] [cursor=pointer]:
+          - img
+          - text: Generate Sample Data
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e29]:
+            - generic [ref=e30]:
+              - img [ref=e31]
+              - generic [ref=e33]: Upcoming Appointments
+            - generic [ref=e34]: Next 7 days
+          - generic [ref=e36]:
+            - img [ref=e37]
+            - paragraph [ref=e39]: No upcoming appointments
+            - link "Schedule one" [ref=e40] [cursor=pointer]:
+              - /url: /appointments
+              - button "Schedule one" [ref=e41]:
+                - text: Schedule one
+                - img
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - generic [ref=e45]:
+              - img [ref=e46]
+              - generic [ref=e51]: Care Team
+            - generic [ref=e52]: Your healthcare providers
+          - generic [ref=e54]:
+            - img [ref=e55]
+            - paragraph [ref=e60]: No care team members yet
+            - link "Add a provider" [ref=e61] [cursor=pointer]:
+              - /url: /care-team
+              - button "Add a provider" [ref=e62]:
+                - text: Add a provider
+                - img
+      - generic [ref=e63]:
+        - generic [ref=e65]:
+          - generic [ref=e66]: Current Status
+          - generic [ref=e67]: Stable
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - img [ref=e71]
+            - generic [ref=e78]:
+              - paragraph [ref=e79]: No Device Connected
+              - paragraph [ref=e80]: Disconnected
+          - generic [ref=e81]:
+            - paragraph [ref=e82]: 0%
+            - img [ref=e83]
+      - generic [ref=e85]:
+        - generic [ref=e86]:
+          - heading "Biomarkers" [level=2] [ref=e87]
+          - link "View Trends" [ref=e88] [cursor=pointer]:
+            - /url: /trends
+            - button "View Trends" [ref=e89]:
+              - text: View Trends
+              - img
+        - generic [ref=e90]:
+          - generic [ref=e92]:
+            - paragraph [ref=e93]: CRP
+            - paragraph [ref=e94]: 3.2 mg/L
+            - paragraph [ref=e95]: 0-3 mg/L
+          - generic [ref=e97]:
+            - paragraph [ref=e98]: IL6
+            - paragraph [ref=e99]: 2.8 pg/mL
+            - paragraph [ref=e100]: 0-5 pg/mL
+          - generic [ref=e102]:
+            - paragraph [ref=e103]: LEPTIN
+            - paragraph [ref=e104]: 28.5 ng/mL
+            - paragraph [ref=e105]: 2-15 ng/mL
+          - generic [ref=e107]:
+            - paragraph [ref=e108]: PROINSULIN
+            - paragraph [ref=e109]: 12.1 pmol/L
+            - paragraph [ref=e110]: 2-20 pmol/L
+          - generic [ref=e112]:
+            - paragraph [ref=e113]: BDNF
+            - paragraph [ref=e114]: 24.3 ng/mL
+            - paragraph [ref=e115]: 10-40 ng/mL
+      - generic [ref=e116]:
+        - heading "Quick Actions" [level=2] [ref=e117]
+        - generic [ref=e118]:
+          - link "Log Mood" [ref=e119] [cursor=pointer]:
+            - /url: /journal
+            - button "Log Mood" [ref=e120]:
+              - img
+              - generic [ref=e121]: Log Mood
+          - link "Trends" [ref=e122] [cursor=pointer]:
+            - /url: /trends
+            - button "Trends" [ref=e123]:
+              - img
+              - generic [ref=e124]: Trends
+          - link "Insights" [ref=e125] [cursor=pointer]:
+            - /url: /insights
+            - button "Insights" [ref=e126]:
+              - img
+              - generic [ref=e127]: Insights
+          - link "Meds" [ref=e128] [cursor=pointer]:
+            - /url: /medications
+            - button "Meds" [ref=e129]:
+              - img
+              - generic [ref=e130]: Meds
+          - link "Alerts" [ref=e131] [cursor=pointer]:
+            - /url: /alerts
+            - button "Alerts" [ref=e132]:
+              - img
+              - generic [ref=e133]: Alerts
+          - link "Device" [ref=e134] [cursor=pointer]:
+            - /url: /device
+            - button "Device" [ref=e135]:
+              - img
+              - generic [ref=e136]: Device
+          - link "Appts" [ref=e137] [cursor=pointer]:
+            - /url: /appointments
+            - button "Appts" [ref=e138]:
+              - img
+              - generic [ref=e139]: Appts
+          - link "Sign In" [ref=e140] [cursor=pointer]:
+            - /url: /api/oauth/login
+            - button "Sign In" [ref=e141]:
+              - img
+              - generic [ref=e142]: Sign In
+  - navigation [ref=e143]:
+    - generic [ref=e144]:
+      - link "Home" [ref=e145] [cursor=pointer]:
+        - /url: /
+        - img [ref=e146]
+        - generic [ref=e149]: Home
+      - link "Trends" [ref=e150] [cursor=pointer]:
+        - /url: /trends
+        - img [ref=e151]
+        - generic [ref=e154]: Trends
+      - link "Device" [ref=e155] [cursor=pointer]:
+        - /url: /device
+        - img [ref=e156]
+        - generic [ref=e160]: Device
+      - link "Alerts" [ref=e161] [cursor=pointer]:
+        - /url: /alerts
+        - img [ref=e162]
+        - generic [ref=e164]: Alerts
+      - link "Journal" [ref=e165] [cursor=pointer]:
+        - /url: /journal
+        - img [ref=e166]
+        - generic [ref=e168]: Journal
+      - link "Meds" [ref=e169] [cursor=pointer]:
+        - /url: /medications
+        - img [ref=e170]
+        - generic [ref=e173]: Meds
+      - link "Insights" [ref=e174] [cursor=pointer]:
+        - /url: /insights
+        - img [ref=e175]
+        - generic [ref=e185]: Insights
+      - link "Appointments" [ref=e186] [cursor=pointer]:
+        - /url: /appointments
+        - img [ref=e187]
+        - generic [ref=e189]: Appointments
+      - link "Profile" [ref=e190] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=e191]
+        - generic [ref=e194]: Profile
+```

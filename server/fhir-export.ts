@@ -262,7 +262,7 @@ export async function generateFHIRBiomarkerObservations(
       },
       effectiveDateTime: new Date(reading.measuredAt).toISOString(),
       valueQuantity: {
-        value: reading.value,
+        value: parseFloat(reading.value), // Convert decimal string to number for FHIR
         unit: reading.unit,
         system: "http://unitsofmeasure.org",
         code: reading.unit,
@@ -329,8 +329,8 @@ export async function generateFHIRAppointments(userId: number): Promise<FHIRAppo
       },
       {
         actor: {
-          reference: `Practitioner/${apt.provider.replace(/\s+/g, "-").toLowerCase()}`,
-          display: apt.provider,
+          reference: `Practitioner/${(apt.providerName || 'unknown').replace(/\s+/g, "-").toLowerCase()}`,
+          display: apt.providerName || 'Unknown Provider',
         },
         status: "accepted",
       },

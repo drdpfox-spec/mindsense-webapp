@@ -30,7 +30,9 @@ export const appRouter = router({
         })
       )
       .query(async ({ ctx, input }) => {
-        return await db.getBiomarkerReadings(ctx.user.id, input.startDate, input.endDate);
+        const readings = await db.getBiomarkerReadings(ctx.user.id, input.startDate, input.endDate);
+        // Map measuredAt to timestamp for frontend compatibility
+        return readings.map(r => ({ ...r, timestamp: r.measuredAt }));
       }),
 
     getLatest: protectedProcedure.query(async ({ ctx }) => {
@@ -183,14 +185,12 @@ export const appRouter = router({
       // Map to correlation analysis format
       const biomarkerData = dbReadings.map(r => ({
         biomarkerType: r.biomarkerType,
-        value: r.value,
+        value: parseFloat(r.value), // Convert decimal string to number
         date: r.measuredAt
       }));
       
       const moodData = dbMoodAssessments.map(m => ({
         moodScore: m.moodScore || 0,
-        anxietyScore: m.anxietyScore || undefined,
-        stressScore: m.stressScore || undefined,
         date: m.assessmentDate
       }));
       
@@ -210,7 +210,7 @@ export const appRouter = router({
       // Map database readings to AI insights format
       const biomarkerReadings = dbReadings.map(r => ({
         biomarkerType: r.biomarkerType,
-        value: r.value,
+        value: parseFloat(r.value), // Convert decimal string to number
         readingDate: r.measuredAt
       }));
       
